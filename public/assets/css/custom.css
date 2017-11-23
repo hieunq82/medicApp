@@ -1,0 +1,73 @@
+.setting_section .nav-tabs > li {
+	float: left;
+	margin-bottom: 0px !important;
+}
+.setting_section .panel-primary > .panel-heading {
+	color: #fff;
+	background-color: #41586E;
+	border-color: #41586E;
+}
+
+.setting_section .panel-primary {
+	border-color: #999999;
+}
+
+/*** PANEL PRIMARY ***/
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li > a,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li > a:hover,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li > a:focus {
+	color: #fff;
+}
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > .open > a,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > .open > a:hover,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > .open > a:focus,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li > a:hover,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li > a:focus {
+	color: #fff;
+	background-color: #3E5468;
+	border-color: transparent;
+}
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.active > a,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.active > a:hover,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.active > a:focus {
+	color: #41586e;
+	background-color: #fff;
+	border-color: #428bca;
+	border-bottom-color: transparent;
+}
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu {
+	background-color: #41586e;
+	border-color: #25313E;
+}
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > li > a {
+	color: #fff;
+}
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > li > a:hover,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > li > a:focus {
+	background-color: #3071a9;
+}
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > .active > a,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > .active > a:hover,
+.setting_section .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > .active > a:focus {
+	background-color: #25313E;
+}
+/********************************************************************/
+
+.monthly_eop {
+	width: 100%;
+	margin: auto;
+	text-align: center;
+	font-size: 58px;
+	border: 3px solid #1BABAC !important;
+	color: #1BABAC;
+	font-weight: bold;
+	background: #F4FAFA;
+}
+.monthly_eop .panel-body > p{
+	font-size:10pt;
+	color:#000000;
+}
+
+.report > td, th {
+	/*padding: 21px !important;;*/
+}

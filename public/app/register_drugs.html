@@ -1,0 +1,162 @@
+
+<div class="wrapper">
+
+    <div class="container">
+        <div class="row" ng-if="!user_logged.user_info.user_hf">
+
+            <div class="panel-group">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">Permission denied</div>
+                    <div class="panel-body">
+                        Current user ({{user_logged.username}}) does not belong to any HP/HF. Please contact your administrator!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <section class="panel panel-default">
+
+                <header class="panel-heading">
+                                                    <span class="h4">
+                                                        <i class="fa fa-hospital-o"></i> {{user_logged.user_info.user_hf.name}}
+                                                    </span>
+                </header><br>
+                <form role="form" method="post">
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                Phone number:
+                                {{user_logged.user_info.user_hf.phone}}
+                            </div>
+                            <div class="form-group">
+                                HF Type:
+                                {{user_logged.user_info.user_hf.type}}
+                            </div>
+                            <div class="form-group">
+                                VDC/Municipality:
+                                {{user_logged.user_info.user_hf.vdc}}
+                            </div>
+                            <div class="form-group">
+                                Address:
+                                {{user_logged.user_info.user_hf.address}}
+                            </div>
+
+                            <div class="form-group">
+                                Reporting center:
+                                <button ng-if="user_logged.user_info.user_hf.reporting_center" class="btn btn-danger btn-sm">{{user_logged.user_info.user_hf.reporting_center.name}}</button>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <strong><i class="fa fa-user-md"></i> Contact person:</strong>
+                                {{user_logged.user_info.user_hf.person}} (Mobile: {{user_logged.user_info.user_hf.person_mobile}})
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-1"></div>
+                </form>
+            </section>
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-list-ul" aria-hidden="true"></i>
+                        Drug register
+                        <span class="pull-right"><button class="btn btn-primary text-success btn-xs" style="margin-top:-8px;" ng-click="get_hfdrugs()">Refresh <i class="fa fa-refresh"></i></button></span>
+                    </div>
+                    <div class="panel-body table-responsive">
+
+
+                    <table class="table table-sm" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Drug Code</th>
+                            <th>Drug Name</th>
+                            <th class="text-center">ASL</th>
+                            <th class="text-center">EOP</th>
+                            <th class="text-center">ABS</th>
+                            <th class="text-center">New ABS</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody ng-repeat="(drung_order,drug) in hf_drugs">
+                        <tr>
+                            <td style="vertical-align: middle;">{{drung_order+1}}</td>
+                            <td style="vertical-align: middle;">{{drug.drug_code}}</td>
+                            <td style="vertical-align: middle;">{{drug.drug_name}}</td>
+                            <td  style="vertical-align: middle;"class="text-center"><span class="badge">{{drug.drug_asl}}</span></td>
+                            <td  style="vertical-align: middle;"class="text-center"><span class="badge">{{drug.drug_eop}}</span></td>
+                            <td  style="vertical-align: middle;"class="text-center"><span class="badge">{{drug.drug_abs}}</span></td>
+                            <td  style="vertical-align: middle;width:10%"class="text-primary text-center">
+                                <input type="text" class="form-control input-sm" ng-model="drug.drug_abs_new" style="width: 60px;text-align: center;margin: auto;">
+                            </td>
+                            <td  style="vertical-align: middle;width:22%"class="h5 text-danger">
+                                <!--<a href="#" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Edit</a>-->
+                                <a ng-click="register_drug(drug)" class="btn btn-sm btn-primary"><i class="fa fa-floppy-o"></i> Register</a>
+                                <a ng-click="get_drug_history(drug.drug_id)" class="btn btn-sm btn-default"><i class="fa fa-arrow-circle-down"></i> History</a>
+                            </td>
+                        </tr>
+                        <tr ng-if="drug_histories[drug.drug_id].length >0">
+                            <td colspan="8">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <i class="fa fa-address-book" aria-hidden="true"></i>
+                                        {{drug.drug_name}} request history
+                                        <span class="pull-right">
+                                           <button class="btn btn-default text-success btn-xs" style="margin-top:-8px;" ng-click="get_drug_history(drug.drug_id)">
+                                           Refresh history <i class="fa fa-refresh"></i></button>
+                                             <button class="btn btn-danger text-success btn-xs" style="margin-top:-8px;" ng-click="drug_histories[drug.drug_id] = {}">
+                                           Close <i class="fa fa-times" ></i></button>
+                                        </span>
+                                    </div>
+                                    <div class="panel-body table-responsive">
+
+                                        <table class="table table-sm ">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Date/Time</th>
+                                                <th class="text-center">Qty old</th>
+                                                <th class="text-center">Qty new</th>
+                                                <th class="text-center">Change</th>
+                                                <th class="text-center">Type</th>
+                                                <th class="text-center">User/Mobile</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="(aIndex,history) in drug_histories[drug.drug_id]">
+                                                <th scope="row">{{aIndex+1}}</th>
+                                                <td>{{history.createdAt | date:"medium"}}</td>
+                                                <td class="text-center">{{history.drug_abs_old}}</td>
+                                                <td class="text-center">{{history.drug_abs}}</td>
+                                                <td class="text-center">{{history.drug_abs-history.drug_abs_old}}
+
+                                                    <i class="fa fa-arrow-up" aria-hidden="true" ng-if="history.drug_abs-history.drug_abs_old>=1" style="color:green;float:right"></i>
+                                                    <i class="fa fa-arrow-down" aria-hidden="true" ng-if="history.drug_abs-history.drug_abs_old <0 " style="color:red;float:right"></i>
+
+
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-success" ng-if="history.update_type == 'web_register'">{{history.update_type}}</span>
+                                                    <span class="badge badge-success" style="background-color:#e29595" ng-if="history.update_type == 'sms_register'">{{history.update_type}}</span>
+                                                </td>
+                                                <td class="text-center">{{history.user_update.username}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+                </div>
+            </div>
+
+    </div>
+</div>

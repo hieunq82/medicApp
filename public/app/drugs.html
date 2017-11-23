@@ -1,0 +1,191 @@
+<section id="content">
+    <section class="vbox">
+        <section class="scrollable padder">
+            <ul class="breadcrumb no-border no-radius b-b b-light pull-in">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">
+                    Drug manage
+                </li>
+            </ul>
+            <div class="col-md-12" style="padding-left:5px;">
+                <div class="pull-right">
+                    <button class="btn btn-primary" ng-click="open_newdrug()"> <i class="fa fa-plus"></i> New Drug</button>
+<button  class="btn btn-success" data-toggle="modal" data-show="true" data-target="#createDrugCategory">  <i class="fa fa-folder-o"></i> New Drug category</button>
+                </div>
+                <br />
+                <br />
+                <section>
+
+
+
+
+                    <div class="table-responsive">
+                        <table class="table table-striped b-t b-light" style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Drug code</th>
+                                <th>Drug name</th>
+                                <th>Drug category</th>
+                                <th style="width:30%">Drug description</th>
+                                <th>Add/Update</th>
+                                <th class="text-center">Active</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(drung_order,drug) in list_drug">
+                                <td>{{drung_order+1}}</td>
+                                <td>{{drug.drug_code}}</td>
+                                <td>{{drug.drug_name}}</td>
+                                <td>{{drug.drug_category_name}}</td>
+                                <td>{{drug.drug_description}}</td>
+                                <td><span class="label label-info">{{drug.createdAt | date:'HH:mm:ss dd/MM/yyyy'}}</span>/
+                                    <span class="label label-info">{{drug.updatedAt |date:'HH:mm:ss dd/MM/yyyy'}}</span></td>
+                                <td class="text-center">
+                                    <i class="fa fa-check-circle" aria-hidden="true" ng-if="drug.drug_status == 1" style="color:#65bd77"></i>
+                                </td>
+                                <td class="h5 text-danger">
+                                    <a href="#" class="btn btn-xs btn-warning" ng-click="open_edit(drug)"><i class="fa fa-edit"></i> Edit</a>
+                                    <a href="#" ng-click="deleteDrug(drug)" class="btn btn-xs btn-danger"><i class="fa fa-times"></i> Del</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </section>
+            </div>
+        </section>
+    </section>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="createDrug" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">
+                    <span ng-if="!tmp_drug.is_edit">New Drugs</span>
+                    <span ng-if="tmp_drug.is_edit">Edit {{tmp_drug.drug_name}}</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12" style="overflow:auto">
+                        <form name="add_drug">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <span class="form_required">(*)</span> Drug Name:
+                                    <span class="form_required" ng-if="add_drug.name.$invalid">Required</span>
+                                    <input class="form-control" name="name" type="text" ng-model="tmp_drug.drug_name" required>
+                                </div>
+                                <div class="col-sm-4">
+                                    <span class="form_required">(*)</span> Drug CODE:
+                                    <span class="form_required" ng-if="add_drug.code.$invalid">Required</span>
+                                    <input class="form-control" name="code" type="text" ng-model="tmp_drug.drug_code" required ng-change="find_drug(tmp_drug.drug_code)" ng-disabled="tmp_drug.is_edit">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            Drug Category: [<a href="#" data-dismiss="modal" data-toggle="modal" data-show="true" data-target="#createDrugCategory">Add new</a>]
+
+                            <ui-select ng-model="tmp_drug.drug_category.selected" theme="selectize" title="Choose a category">
+                                <ui-select-match placeholder="Select or search a drug category...">{{$select.selected.cat_name}}</ui-select-match>
+                                <ui-select-choices repeat="cat in list_drug_categories | filter: $select.search">
+                                    <span ng-bind-html="cat.cat_name | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
+
+                        </div>
+                        <div class="form-group">
+                            Drug Description:
+                            <textarea class="form-control" ng-model="tmp_drug.drug_description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            Status:
+                            <!-- Rectangular switch -->
+                            <label><input type="radio" ng-value="1" ng-model="tmp_drug.drug_status" name="drug_status" > Active</label>
+                            <label><input type="radio" value="0" ng-model="tmp_drug.drug_status" name="drug_status"> Deactive</label>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" ng-class="{'disabled': add_drug.$invalid}" ng-click="createNewDrug(tmp_drug);" name="change" class="btn btn-danger btn-s-xs" ng-if="!tmp_drug.is_edit"><i class="fa fa-floppy-o"></i> Save</button>
+                <button type="submit" ng-class="{'disabled': add_drug.$invalid}" ng-click="save_drug_edit(tmp_drug);" name="change" class="btn btn-danger btn-s-xs" ng-if="tmp_drug.is_edit"><i class="fa fa-floppy-o"></i> Update</button>
+                <button class="btn btn-primary" data-toggle="modal" data-show="true" data-dismiss="modal" data-target="#createDrugCategory"> <i class="fa fa-folder-o"></i> New Drug Category</button>
+
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-s-xs"><i class="fa fa-times"></i> Close</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="createDrugCategory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Drug Category</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="table-responsive">
+                                <table class="table table-striped b-t b-light" style="width:100%;">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:5%">#</th>
+                                        <th style="width:60%">Drug category name</th>
+                                        <th style="width:20%" class="text-center">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="2">
+                                            <input type="text" class="form-control input-sm" ng-model="drug_category_name">
+                                        </td>
+
+                                        <td  class="text-center">
+                                            <button class="btn btn-sm btn-primary" ng-click="add_drugcat(drug_category_name)"><i class="fa fa-arrow-down"></i> Add</button>
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat="(drung_order,drug) in list_drug_categories">
+                                        <td>{{drung_order+1}}</td>
+                                        <td>{{drug.cat_name}}</td>
+                                        <td class="text-center">
+                                            <a href="#" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Edit</a>
+                                            <a href="#" class="btn btn-xs btn-danger" ng-click="deleteDrugCat(drug)"><i class="fa fa-times"></i> Del</a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-toggle="modal" data-show="true" data-dismiss="modal" data-target="#createDrug"> <i class="fa fa-file-o"></i> Create New Drug</button>
+
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-s-xs"><i class="fa fa-times"></i>  Close</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

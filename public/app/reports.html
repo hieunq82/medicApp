@@ -1,0 +1,203 @@
+<section id="content">
+    <section class="vbox">
+        <section class="scrollable padder">
+            <ul class="breadcrumb no-border no-radius b-b b-light pull-in">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">
+                    Reports
+                </li>
+            </ul>
+            <div class="col-md-12" style="padding-left:5px;">
+
+                <section>
+
+
+                    <div class="main_section" style="width:100%">
+                        <div class="container" style="width:100%;padding-left:0px;">
+                            <div class="chat_container">
+                                <div class="col-sm-3 chat_sidebar">
+                                    <div class="row">
+                                        <div id="custom-search-input">
+                                            <div class="input-group col-md-12">
+                                                <input type="text" class="  search-query form-control" placeholder="Search..." ng-model="reportFilter"/>
+                                                <button class="btn btn-danger" type="button">
+                                                    <span class=" glyphicon glyphicon-search"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="member_list">
+                                            <ul class="list-unstyled">
+                                                <li class="left clearfix" ng-repeat="(pindex,report) in list_register | orderBy:'-createdAt' | filter:reportFilter" ng-click="choose_report(report,pindex)" ng-class="{'active_li': detail_messages.index == pindex}">
+                                                                     <span class="chat-img pull-left">
+                                                                     <img src="/assets/images/default-avatar.png" alt="User Avatar" class="img-circle">
+                                                                     </span>
+                                                    <div class="chat-body clearfix">
+                                                        <div class="header_sec ">
+                                                            <strong class="primary-font">{{report.from}}</strong>
+                                                            <span class="pull-right">
+                                                                {{momentjs(report.createdAt).format('MM-DD-YYYY')}}
+                                                            </span>
+                                                        </div>
+                                                        <div class="contact_sec">
+                                                            {{report.sms_message.message}}
+                                                            <span class="badge pull-right">1</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            </ul>
+                                        </div></div>
+                                </div>
+                                <!--chat_sidebar-->
+
+
+                                <div class="col-sm-9 message_section">
+                                    <div class="row" ng-if="detail_messages">
+
+                                        <div  style="height:100% !important;">
+
+                                            <section class="panel panel-default">
+                                                <header class="panel-heading">
+                                                    <span class="h4">
+                                                        <i class="fa fa-phone-square" aria-hidden="true"></i>  {{detail_messages.from}}<br />
+                                                    </span>
+
+                                                    <span style="float: right;margin-top: -17px;font-size: 8pt;color: #716d6d;">
+                                                        Received {{momentjs(detail_messages.createdAt).format('HH:mm:ss MM-DD-YYYY')}}
+                                                    </span>
+                                                </header><br>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+
+                                                        <ul class="list-group">
+                                                            <li class="list-group-item">
+                                                                <h4 class="list-group-item-heading">
+                                                                    <i class="fa fa-wpforms" aria-hidden="true"></i>
+                                                                    Drug register</h4>
+                                                                <p class="list-group-item-text">
+                                                                    Drug code: {{detail_messages.raw_msg[1]}} - Quantity: {{detail_messages.raw_msg[2]}}
+                                                                </p>
+
+                                                            </li>
+
+                                                            <li class="list-group-item">
+                                                                <h4 class="list-group-item-heading">
+                                                                    <i class="fa fa-code" aria-hidden="true"></i> Raw content
+                                                                </h4>
+                                                                <p class="list-group-item-text">
+                                                                    <div class="sms_send_body">
+                                                                        {{detail_messages.sms_message.message}}
+                                                                    </div>
+                                                                </p>
+
+                                                            </li>
+                                                            <li class="list-group-item">
+                                                                <!--<h4 class="list-group-item-heading">-->
+                                                                    <!--<i class="fa fa-paper-plane" aria-hidden="true"></i>-->
+                                                                    <!--Automated reply-->
+                                                                <!--</h4>-->
+                                                                <!--<p class="list-group-item-text">-->
+                                                                <!--<div class="sms_send_body">-->
+                                                                    <!--{{detail_messages.auto_message[0].content}}-->
+                                                                    <!--<br />-->
+                                                                    <!--<span>-->
+                                                                        <!--<i class="fa fa-circle status_{{detail_messages.auto_message[0].state}}" aria-hidden="true"></i>-->
+                                                                    <!--{{detail_messages.auto_message[0].state}} to {{detail_messages.from}}-->
+                                                                    <!--</span>-->
+                                                                <!--</div>-->
+                                                                <!--</p>-->
+
+                                                                <!--<br />-->
+                                                                <div ng-if="detail_messages.tasks.length > 0">
+                                                                    <h4 class="list-group-item-heading">
+                                                                        <i class="fa fa-history" aria-hidden="true"></i>
+                                                                        Outgoing messages
+                                                                    </h4>
+                                                                    <p class="list-group-item-text">
+
+
+                                                                    <ul class="list-group">
+                                                                        <li class="list-group-item" ng-repeat="msg in detail_messages.tasks" ng-if="msg.type != 'sms_default'">
+                                                                            <div class="sms_send_body">
+                                                                                <span>
+                                                                                    {{msg.content}}
+                                                                                </span>
+                                                                                <br />
+                                                                                <span>
+                                                                        <i class="fa fa-circle status_{{msg.state}}" aria-hidden="true"></i>
+                                                                    {{msg.state}} to {{msg.to}}
+                                                                                    <span ng-if="msg.state == 'FAILED'">(Reason: {{msg.history}})</span>
+                                                                    </span>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                    </p>
+                                                                </div>
+
+
+
+
+                                                            </li>
+                                                            <!--<li class="list-group-item">-->
+                                                                <!--TEST-->
+                                                            <!--</li>-->
+                                                        </ul>
+
+
+                                                        <!--{{detail_messages}}-->
+                                                    </div>
+                                                </div>
+                                            </section>
+
+
+
+                                    </div>
+                                </div> <!--message_section-->
+                            </div>
+                        </div>
+                    </div>
+
+
+                </section>
+            </div>
+
+
+            </div>
+        </section>
+    </section>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="loadMailget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Send message</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group">
+                            Send to: <input class="form-control" name="to" id="to" placeholder="+84987654321" data-toggle="popover" type="text" ng-model="msg.to">
+                        </div>
+                        <div class="form-group">
+                            Message: <input class="form-control" name="msg.content" ng-model="msg.content" type="text" placeholder="Hello">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" ng-click="sendMsg(msg);" name="change" class="btn btn-success btn-s-xs">Send Message</button>
+                <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-chevron-left"></i> Back</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

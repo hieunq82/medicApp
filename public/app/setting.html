@@ -1,0 +1,251 @@
+<section id="content" ng-init="get_list_settings()" class="setting_section">
+    <section class="vbox">
+        <section class="scrollable padder">
+            <ul class="breadcrumb no-border no-radius b-b b-light pull-in">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">
+                    Settings
+                </li>
+            </ul>
+            <div class="col-md-12" style="padding-left:5px;">
+
+                <section>
+
+
+                    <div class="main_section" style="width:100%">
+                        <div class="container" style="width:100%;padding-left:0px;">
+                            <div class="chat_container">
+
+
+                                <div class="panel with-nav-tabs panel-primary">
+                                    <div class="panel-heading">
+                                        <ul class="nav nav-tabs">
+                                            <li class="active"><a href="#settings" data-toggle="tab" ng-click="get_list_settings()">System Settings</a></li>
+                                            <li><a href="#accounts" data-toggle="tab" ng-click="get_list_account()">Account Manager</a></li>
+                                            <!--<li><a href="#translates" data-toggle="tab">Translates</a></li>-->
+
+                                        </ul>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade in active" id="settings">
+
+                                                <form ng-repeat="setting in list_settings">
+
+                                                    <fieldset style="border: 1px solid #c2c2c2;padding: 10px 10px;">
+<legend style="width: auto !important;padding:5px !important;margin-bottom: 0px !important;border:none !important;">{{setting.setting_name}} </legend>
+                                                        <div class="form-group" ng-repeat="st in setting.setting_value">
+                                                            <label for="{{st.setting_code}}" style="width:100%;color:black">{{st.setting_name}}
+                                                                <span ng-if="st.setting_varible.length > 0" style="float:right;">
+                                                                   <strong><i class="fa fa-code" aria-hidden="true"></i>
+                                                                    Click to add: </strong>
+                                                                    <span style="cursor: pointer" ng-repeat="(vindex,var) in st.setting_varible" ng-click="add_variable_code(var,st)"><{{var}}><span ng-if="vindex+1 < st.setting_varible.length">,</span></span>
+                                                                </span>
+                                                            </label>
+
+
+
+
+                                                            <input type="text" class="form-control" id="{{st.setting_code}}" placeholder="Enter value" ng-model="st.setting_value">
+                                                            <small id="emailHelp" class="form-text text-muted">{{st.setting_note}}</small>
+                                                        </div>
+
+                                                        <button type="type" class="btn btn-primary" ng-click="save_setting(setting)">Save</button>
+
+                                                    </fieldset>
+
+                                                </form>
+
+
+
+
+                                            </div>
+                                            <div class="tab-pane fade" id="translates">
+                                               Translate
+                                            </div>
+                                            <div class="tab-pane fade" id="accounts">
+                                                <form>
+
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="panel panel-default">
+                                                                <div class="panel-heading">
+                                                                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                                                                     List Member
+
+
+                                                                    <span class="pull-right">
+                                                                        <button class="btn btn-primary text-success btn-xs" style="margin-top:-8px;" ng-click="open_newacc_pop()">
+                                                    <i class="fa fa-plus"></i>  New Account <i class="fa fa-user-circle"></i></button>
+
+                                                                    </span>
+                                                                </div>
+                                                                <div class="panel-body table-responsive">
+
+                                                                    <table class="table table-sm ">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th>#</th>
+                                                                            <th>Username</th>
+                                                                            <th>First Name</th>
+                                                                            <th>Last Name</th>
+                                                                            <th>Email</th>
+                                                                            <th>Mobile</th>
+                                                                            <th>Health Facility</th>
+                                                                            <th class="text-center">Is Admin</th>
+                                                                            <th>Action</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <tr ng-repeat="(aIndex,account) in list_accounts">
+                                                                            <th scope="row">{{aIndex+1}}</th>
+                                                                            <td>{{account.username}}</td>
+                                                                            <td>{{account.first_name}}</td>
+                                                                            <td>{{account.last_name}}</td>
+                                                                            <td>{{account.email}}</td>
+                                                                            <td>{{account.phone_number}}</td>
+                                                                            <td>{{account.hf.name}}</td>
+                                                                            <td class="text-center"><i class="fa fa-check-circle" aria-hidden="true" ng-if="account.is_admin" style="color:green"></i></td>
+                                                                            <td>
+                                                                                <button ng-click="open_editAccount(account)" class="btn btn-xs btn-primary">Edit</button>
+                                                                                <button ng-click="removeAccount(account)" class="btn btn-xs btn-danger">Remove</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </section>
+            </div>
+
+
+            </div>
+        </section>
+    </section>
+</section>
+
+<div class="modal fade" id="newAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">
+                    <span ng-if="!newacc.is_edit">New Account</span>
+                    <span ng-if="newacc.is_edit">Edit {{newacc.username}}</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <form name="myForm"></form>
+
+                <div class="row">
+                    <div class="col-sm-12" style="height:450px;overflow:auto">
+
+                        <fieldset>
+
+                            <form name="newForm">
+                            <div class="form-group" ng-if="!newacc.is_edit">
+                                <label for="username" style="width:100%;"><span class="form_required">(*)</span> Username
+                                    <span class="form_required" ng-if="newForm.username.$invalid">Required</span>
+                                    <span class="form_required pull-right" ng-if="account_exist"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Account {{newacc.username}} is existed, please choose another one.</span>
+
+                                </label>
+                                <input type="text" class="form-control" name="username" id="username" placeholder="" ng-model="newacc.username" ng-change="check_exist_account(newacc.username)" required>
+                            </div>
+                                <div class="form-group" ng-if="!newacc.is_edit">
+                                    <label for="password" style="width:100%;"><span class="form_required">(*)</span>  Password
+                                        <span class="form_required" ng-if="newForm.password.$invalid">Required</span>
+
+                                    </label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="" ng-model="newacc.password" required autocomplete="off">
+                                </div>
+
+
+                                <div class="form-group" ng-if="newacc.is_edit">
+                                    <label for="username" style="width:100%;">Username
+                                    </label>
+                                    <input type="text" class="form-control" name="username" id="username" ng-model="newacc.username" disabled>
+                                </div>
+
+                            <div class="form-group" ng-if="newacc.is_edit">
+                                <label for="password" style="width:100%;">Password
+                                    <span class=" pull-right" style="color:green">Leave the field blank if you don't want to change password <i class="fa fa-arrow-down" aria-hidden="true"></i>
+</span>
+
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="" ng-model="newacc.password" required autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label style="width:100%;">Health Facility
+
+                                </label>
+                                <ui-select ng-model="newacc.reporting_center.selected" theme="selectize" title="Choose HF">
+                                    <ui-select-match placeholder="Select or search a HF...">{{$select.selected.name}}</ui-select-match>
+                                    <ui-select-choices repeat="rp_center in list_hf | filter: $select.search">
+                                        <span ng-bind-html="rp_center.name | highlight: $select.search"></span>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="blankRadio" id="blankRadio1" value="true" ng-model="newacc.is_admin">
+                                    Is Admin
+                                </label>
+                            </div>
+                            <hr >
+
+
+                            <div class="form-group">
+                                <label for="first_name" style="width:100%;">First name</label>
+                                <input type="text" class="form-control" id="first_name" placeholder="" ng-model="newacc.first_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name" style="width:100%;">Last name</label>
+                                <input type="text" class="form-control" id="last_name" placeholder="" ng-model="newacc.last_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email" style="width:100%;">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="" ng-model="newacc.email">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone_number" style="width:100%;">Phone number</label>
+                                <input type="text" class="form-control" id="phone_number" placeholder="" ng-model="newacc.phone_number">
+                            </div>
+                            </form>
+                        </fieldset>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" ng-click="btnNewAccount(newacc);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':newForm.$invalid && !account_exist}" ng-if="!newacc.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
+                <button type="submit" ng-click="saveEditAccount(newacc);" name="change" class="btn btn-danger btn-s-xs" ng-if="newacc.is_edit"><i class="fa fa-floppy-o"></i>  Update</button>
+                <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-times"></i> Close</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

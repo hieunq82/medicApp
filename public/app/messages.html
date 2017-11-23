@@ -1,0 +1,156 @@
+ <section id="content">
+                    <section class="vbox">
+                        <section class="scrollable padder">
+                            <ul class="breadcrumb no-border no-radius b-b b-light pull-in">
+                                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                                <li class="active">
+                                    Messages
+                                </li>
+                            </ul>
+                            <div class="col-md-12" style="padding-left:5px;">
+
+                                <section>
+
+
+                                    <div class="main_section" style="width:100%">
+                                        <div class="container" style="width:100%;padding-left:0px;">
+                                            <div class="chat_container">
+                                                <div class="col-sm-3 chat_sidebar">
+                                                    <div class="row">
+                                                        <div id="custom-search-input">
+                                                            <div class="input-group col-md-12">
+                                                                <input type="text" class="  search-query form-control" placeholder="Search" ng-model="filterMessage" />
+                                                                <button class="btn btn-danger" type="button">
+                                                                    <span class=" glyphicon glyphicon-search"></span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="member_list">
+                                                            <ul class="list-unstyled">
+                                                                <li class="left clearfix" ng-repeat="(pindex,message) in list_mesages | filter:filterMessage" ng-click="set_active_index(pindex)" ng-class="{'active_li': detail_messages.index == pindex}">
+                                                                     <span class="chat-img pull-left">
+                                                                     <img src="/assets/images/default-avatar.png" alt="User Avatar" class="img-circle">
+                                                                     </span>
+                                                                    <div class="chat-body clearfix">
+                                                                        <div class="header_sec ">
+                                                                            <strong class="primary-font">{{message.from}}</strong> <strong class="pull-right">
+                                                                            -</strong>
+                                                                        </div>
+                                                                        <div class="contact_sec">
+                                                                            -
+                                                                            <span class="badge pull-right">{{message.messages.length}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+
+                                                            </ul>
+                                                        </div></div>
+                                                </div>
+                                                <!--chat_sidebar-->
+
+
+                                                <div class="col-sm-9 message_section">
+                                                    <div class="row">
+                                                        <div class="new_message_head">
+                                                            <div class="pull-left">
+                                                                <a class="btn btn-primary text-success btn_getmail" style="margin-top:-8px;" data-toggle="modal" data-show="true" href="#" data-target="#loadMailget">
+                                                                    <i class="fa fa-plus"></i>  Send message <i class="fa fa-envelope-o"></i></a>
+                                                            </div>
+
+                                                            <div class="pull-right"><div class="dropdown">
+                                                                <button class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fa fa-cogs" aria-hidden="true"></i>  Setting
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                                    <li><a href="#"  ng-click="get_messages()">Check message</a></li>
+                                                                    <li><a href="#">Profile</a></li>
+                                                                    <li><a href="#">Logout</a></li>
+                                                                </ul>
+                                                            </div></div>
+                                                        </div><!--new_message_head-->
+
+                                                        <div class="chat_area" style="height:100% !important;">
+                                                            <ul class="list-unstyled">
+                                                                <li class="left clearfix" ng-repeat="detail in detail_messages.messages">
+                                                                     <span class="chat-img1 pull-left">
+                                                                     <img src="/assets/images/default-avatar.png" alt="User Avatar" class="img-circle">
+                                                                     </span>
+                                                                    <div class="chat-body1 clearfix body_mess">
+                                                                        <p>{{detail.content}}</p>
+                                                                        <div class="chat_time pull-right">09:40PM</div>
+                                                                    </div>
+                                                                </li>
+
+                                                                <!--<li class="left clearfix admin_chat">-->
+                                                                     <!--<span class="chat-img1 pull-right">-->
+                                                                     <!--<img src="/assets/images/default-avatar.png" alt="User Avatar" class="img-circle">-->
+                                                                     <!--</span>-->
+                                                                    <!--<div class="chat-body1 clearfix">-->
+                                                                        <!--<p>Hello.</p>-->
+                                                                        <!--<div class="chat_time pull-left">09:40PM</div>-->
+                                                                    <!--</div>-->
+                                                                <!--</li>-->
+
+
+
+
+                                                            </ul>
+                                                        </div><!--chat_area-->
+                                                        <div class="message_write">
+                                                            <textarea class="form-control" placeholder="type a message"></textarea>
+                                                            <div class="clearfix"></div>
+                                                            <div class="chat_bottom">
+                                                                <a href="#" class="pull-right btn btn-success">
+                                                                    Send</a></div>
+                                                        </div>
+                                                    </div>
+                                                </div> <!--message_section-->
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </section>
+                            </div>
+
+
+                            </div>
+                        </section>
+                    </section>
+                </section>
+
+ <!-- Modal -->
+ <div class="modal fade" id="loadMailget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+     <div class="modal-dialog">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                 <h4 class="modal-title">Send message</h4>
+             </div>
+             <div class="modal-body">
+
+                 <div class="row">
+                     <div class="col-sm-10">
+                         <div class="form-group">
+                             Send to: <input class="form-control" name="to" id="to" placeholder="+84987654321" data-toggle="popover" type="text" ng-model="msg.to">
+                         </div>
+                         <div class="form-group">
+                             Message: <input class="form-control" name="msg.content" ng-model="msg.content" type="text" placeholder="Hello">
+                         </div>
+
+                     </div>
+                 </div>
+             </div>
+             <div class="modal-footer">
+                 <button type="submit" ng-click="sendMsg(msg);" name="change" class="btn btn-success btn-s-xs">Send Message</button>
+                 <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-chevron-left"></i> Back</button>
+
+             </div>
+         </div>
+         <!-- /.modal-content -->
+     </div>
+     <!-- /.modal-dialog -->
+ </div>
+ <!-- /.modal -->

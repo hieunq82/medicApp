@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html ng-app ="drugmonApp">
+    <head>
+        <title>Drugmon Project</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+        <base href="/" />
+        <link rel="stylesheet" href="/assets/css/bootstrap.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/animate.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/bootstrap_calendar.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/app.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/messages.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/toaster.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/ngDialog.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/css/custom.css" type="text/css"/>
+
+        <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicon/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicon/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicon/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicon/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicon/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicon/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicon/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/assets/favicon/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="/assets/favicon/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/assets/favicon/manifest.json">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="/assets/favicon/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+
+
+        <script src="/assets/jquery-2.0.3.min.js"></script>
+        <script src="/assets/bootstrap.min.js"></script>
+
+
+        <script type='text/javascript' src="/lib/moment.min.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/lodash.min.js" charset="UTF-8"></script>
+        <script data-require="angular.js@1.4.x" src="/lib/angular-1.4.9.js" data-semver="1.4.9"></script>
+        <script type='text/javascript' src="/lib/angular-ui-router.min.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/angular-sanitize.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/angular-cookies.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/angular-storage.min.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/angular-animate.min.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/ngDialog.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/assets/js/toaster.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/lib/sha1.js" charset="UTF-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-chart/1.0.0-beta.1/ng-google-chart.min.js" type="text/javascript"></script>
+
+        <script src="/lib/xlsx.core.min.js" type="text/javascript"></script>
+        <script src="/lib/alasql.min.js" type="text/javascript"></script>
+
+        <!-- ui-select files -->
+        <script src="/lib/select.min.js"></script>
+        <link rel="stylesheet" href="/assets/css/select.css">
+        <link rel="stylesheet" href="/assets/css/selectize.default.css">
+
+
+
+        <script type='text/javascript' src="/app.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/home.controller.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/account.controller.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/app.controller.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/messages.controller.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/hf.controller.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/drugs.controller.js" charset="UTF-8"></script>
+        <script type='text/javascript' src="/app/reports.controller.js" charset="UTF-8"></script>
+
+
+
+    </head>
+    <body ng-controller="homeCtrl">
+
+    <toaster-container toaster-options="{'position-class': 'toast-bottom-left'}"></toaster-container>
+
+        <section class="vbox">
+    <header class="bg-dark dk header navbar navbar-fixed-top-xs">
+        <div class="navbar-header aside-md">
+            <a class="btn btn-link visible-xs" data-toggle="class:nav-off-screen,open" data-target="#nav,html" id="toggle_mobile_menu">
+<i class="fa fa-bars"></i>
+</a>
+            <a href="#" class="navbar-brand" data-toggle="fullscreen"><img src="assets/images/logo.png" class="m-r-sm" style="min-height: 40px !important;margin-left: 6px;"></a>
+            <a class="btn btn-link visible-xs" data-toggle="dropdown" data-target=".nav-user">
+<i class="fa fa-cog"></i>
+</a>
+        </div>
+
+
+        <ul class="nav navbar-nav navbar-right m-n hidden-xs nav-user" ng-if="user_logged">
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+<span class="thumb-sm avatar pull-left">
+<img src="assets/images/default-avatar.png">
+</span>
+Hello <strong>{{user_logged.username}}</strong><b class="caret"></b>
+</a>
+                <ul class="dropdown-menu animated fadeInRight">
+                    <span class="arrow top"></span>
+                    <li>
+                        <a href="#">Change password</a>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" ng-click="logoutAction()">Logout</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+    <section>
+        <section class="hbox stretch">
+
+            <aside class="bg-dark lter aside-md hidden-print hidden-xs" id="nav" ng-if="user_logged">
+                <section class="vbox" style="min-height: 900px;">
+                    <section class="w-f scrollable">
+                        <div class="slim-scroll" data-height="auto" data-disable-fade-out="true" data-distance="0" data-size="5px" data-color="#333333">
+
+                            <nav class="nav-primary hidden-xs">
+                                <ul class="nav" ng-if="user_logged && !user_logged.is_admin">
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="userregister">
+                                            <i class="fa fa-edit icon">
+                                                <b class="bg-info"></b>
+                                            </i>
+                                            <span>Register Drug</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <ul class="nav" ng-if="user_logged && user_logged.is_admin">
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="app">
+                                        <i class="fa fa-dashboard icon">
+                                        <b class="bg-info"></b>
+                                        </i>
+                                        <span>Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="messages">
+                                        <i class="fa fa-inbox icon">
+                                        <b class="bg-info"></b>
+                                        </i>
+                                        <span>Messages</span>
+                                        </a>
+                                    </li>
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="reports({f: null})" title="" ng-class="{active: checkactive('reports')}">
+                                            <i class="fa fa-users icon">
+                                            <b class="bg-success"></b>
+                                            </i>
+                                            <span>Reports</span>
+                                            </a>
+                                    </li>
+
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="healthfacility"  ng-class="{active: checkactive('healthfacility')}">
+                                            <i class="fa fa-hospital-o">
+                                            <b class="bg-primary"></b>
+                                            </i>
+                                            <span>Health Facility </span>
+                                            </a>
+                                    </li>
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="drugs"  ng-class="{active: checkactive('drugs')}">
+                                            <i class="fa fa-eye-slash">
+                                            <b class="bg-danger"></b>
+                                            </i>
+                                            <span>Drugs category</span>
+                                            </a>
+                                    </li>
+                                    <li ng-click="toogle_xmenu()">
+                                        <a ui-sref="setting" ng-class="{active: checkactive('setting')}">
+                                            <i class="fa fa-cogs">
+                                            <b class="bg-warning"></b>
+                                            </i>
+                                            <span>Setting</span>
+                                            </a>
+                                    </li>
+
+                                </ul>
+                            </nav>
+
+                        </div>
+                    </section>
+
+                </section>
+                <!--<footer class="footer lt hidden-xs b-t b-dark">-->
+                    <!--<div id="chat" class="dropup">-->
+                        <!--<section class="dropdown-menu on aside-md m-l-n">-->
+                            <!--<section class="panel bg-white">-->
+                                <!--<header class="panel-heading b-b b-light">Active chats</header>-->
+                                <!--<div class="panel-body animated fadeInRight">-->
+                                    <!--<p class="text-sm">No active chats.</p>-->
+                                    <!--<p><a href="#" class="btn btn-sm btn-default">Start a chat</a></p>-->
+                                <!--</div>-->
+                            <!--</section>-->
+                        <!--</section>-->
+                    <!--</div>-->
+                    <!--<div id="invite" class="dropup">-->
+                        <!--<section class="dropdown-menu on aside-md m-l-n">-->
+                            <!--<section class="panel bg-white">-->
+                                <!--<header class="panel-heading b-b b-light">-->
+                                    <!--John <i class="fa fa-circle text-success"></i>-->
+                                <!--</header>-->
+                                <!--<div class="panel-body animated fadeInRight">-->
+                                    <!--<p class="text-sm">No contacts in your lists.</p>-->
+                                    <!--<p><a href="#" class="btn btn-sm btn-facebook"><i class="fa fa-fw fa-facebook"></i> Invite from Facebook</a></p>-->
+                                <!--</div>-->
+                            <!--</section>-->
+                        <!--</section>-->
+                    <!--</div>-->
+                    <!--<a href="#nav" data-toggle="class:nav-xs" class="pull-right btn btn-sm btn-dark btn-icon">-->
+                        <!--<i class="fa fa-angle-left text"></i>-->
+                        <!--<i class="fa fa-angle-right text-active"></i>-->
+                    <!--</a>-->
+                <!--</footer>-->
+            </aside>
+
+
+
+			<section class="container" ui-view=""></section>
+               
+                <aside class="bg-light lter b-l aside-md hide" id="notes">
+                    <div class="wrapper">Notification</div>
+                </aside>
+            </section>
+        </section>
+        </section>
+
+
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/app.plugin.js"></script>
+
+    </body>
+</html>
+ 

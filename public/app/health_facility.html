@@ -1,0 +1,348 @@
+<section id="content">
+    <section class="vbox">
+        <section class="scrollable padder">
+            <ul class="breadcrumb no-border no-radius b-b b-light pull-in">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">
+                    People and Place
+                </li>
+            </ul>
+            <div class="col-md-12" style="padding-left:5px;min-height: 900px">
+
+                <section>
+                    <div class="main_section" style="width:100%">
+                        <div class="container" style="width:100%;padding-left:0px;">
+                            <div class="chat_container">
+                                <div class="col-sm-3 chat_sidebar">
+                                    <div class="row">
+                                        <div id="custom-search-input">
+                                            <div class="input-group col-md-12">
+                                                <input type="text" class="  search-query form-control" placeholder="Find HF/VDC"  ng-model="hfFilter"/>
+                                                <button class="btn btn-danger" type="button">
+                                                    <span class=" glyphicon glyphicon-search"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="member_list">
+                                            <ul class="list-unstyled">
+                                                <li class="left clearfix" ng-repeat="(pindex,hf) in list_hf | filter:hfFilter" ng-click="choose_hf(hf)" ng-class="{'active_li': hf_selected._id == hf._id}">
+
+                                                    <div class="chat-body clearfix" style="margin-left:3px;">
+                                                        <div class="header_sec ">
+                                                            <strong class="primary-font"><i class="fa fa-hospital-o"></i> {{hf.name}}</strong>
+                                                        </div>
+                                                        <div class="contact_sec">
+                                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                                            Contact person: {{hf.person}}
+                                                            <!--<span class="badge">{{hf.health_facilities.length}}</span>-->
+
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            </ul>
+                                        </div></div>
+                                </div>
+                                <!--chat_sidebar-->
+
+
+                                <div class="col-sm-9 message_section">
+                                    <div class="row">
+                                        <div class="new_message_head">
+                                            <div class="pull-left">
+                                                <a class="btn btn-primary text-success btn_getmail" style="margin-top:-8px;" ng-click="open_newhf()">
+                                                    <i class="fa fa-plus"></i>  New Place/Facility <i class="fa fa-hospital-o"></i></a>
+                                            </div>
+
+                                            <div class="pull-right" ng-if="hf_selected"><div class="dropdown">
+                                                <button class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fa fa-cogs" aria-hidden="true"></i>  Action
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                    <li><a href="#" ng-click="open_edithf(hf_selected)">Edit</a></li>
+                                                    <li><a href="#" ng-click="delete_hf(hf_selected)">Delete</a></li>
+                                                </ul>
+                                            </div></div>
+                                        </div><!--new_message_head-->
+
+                                        <div class="" ng-if="hf_selected">
+
+                                            <section class="panel panel-default">
+
+                                                <header class="panel-heading">
+                                                    <span class="h4">
+                                                        <i class="fa fa-hospital-o"></i> {{hf_selected.name}}
+                                                    </span>
+                                                </header><br>
+                                                <form role="form" method="post">
+                                                    <div class="row">
+                                                    <div class="col-sm-1"></div>
+                                                    <div class="col-sm-10">
+                                                    <div class="form-group">
+                                                        Phone number:
+                                                        {{hf_selected.phone}}
+                                                    </div>
+                                                    <div class="form-group">
+                                                        HF Type:
+                                                        {{hf_selected.type}}
+                                                    </div>
+                                                    <div class="form-group">
+                                                        VDC/Municipality:
+                                                        {{hf_selected.vdc}}
+                                                    </div>
+                                                        <div class="form-group">
+                                                        Address:
+                                                        {{hf_selected.address}}
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        Reporting center:
+                                                        <button ng-if="hf_selected.reporting_center" class="btn btn-danger btn-sm" ng-click="choose_hf(hf_selected.reporting_center)">{{hf_selected.reporting_center.name}}</button>
+                                                    </div>
+                                                        <div class="form-group">
+                                                            Notes:
+                                                            {{hf_selected.notes}}
+                                                        </div>
+                                                    <hr>
+                                                            <div class="form-group">
+                                                                <strong><i class="fa fa-user-md"></i> Contact person:</strong>
+                                                                {{hf_selected.person}} (Mobile: {{hf_selected.person_mobile}})
+                                                            </div>
+                                                    <!--<div class="panel-footer text-right bg-light lter">-->
+                                                        <!--<button type="submit" onclick="submitForm();" name="change" class="btn btn-success btn-s-xs">Save Changes</button>-->
+                                                        <!--<button type="button" name="back" class="btn btn-info btn-s-xs"><i class="fa fa-edit"></i> Edit</button>-->
+                                                    <!--</div>-->
+                                                </div>
+                                                </div>
+                                                    <div class="col-sm-1"></div>
+                                                </form>
+                                            </section>
+                                            <section class="panel panel-default">
+
+                                                <header class="panel-heading">
+                                                    <span class="h4">
+                                                        <i class="fa fa-hospital-o"></i> Drug stocks
+                                                    </span>
+                                                </header><br>
+                                                <form role="form" method="post">
+                                                    <div class="row">
+                                                        <div class="col-sm-12">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-striped b-t b-light" style="width:100%;">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th>Drug Code</th>
+                                                                        <th>Drug Name</th>
+                                                                        <th class="text-center">ASL</th>
+                                                                        <th class="text-center">EOP</th>
+                                                                        <th class="text-center">ABS</th>
+                                                                        <th class="text-center">Action</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td style="width:30%" colspan="3">
+                                                                            <ui-select ng-model="newdrug.drug_push.selected" theme="selectize" title="Choose drug to add">
+                                                                                <ui-select-match placeholder="Select or search a drug...">{{$select.selected.drug_name}} (Code: {{$select.selected.drug_code}})</ui-select-match>
+                                                                                <ui-select-choices repeat="drug in list_drug | filter: $select.search">
+                                                                                    <span>
+                                                                                        {{drug.drug_name}} (Code: {{drug.drug_code}})
+                                                                                    </span>
+                                                                                </ui-select-choices>
+                                                                            </ui-select>
+
+                                                                        </td>
+                                                                        <td class="h5 text-primary" style="width:8%">
+                                                                            <input type="text" class="form-control input-sm" ng-model="newdrug.drug_asl">
+
+                                                                        </td>
+                                                                        <td class="h5 text-primary" style="width:8%">
+                                                                            <input type="text" class="form-control input-sm" ng-model="newdrug.drug_eop">
+
+                                                                        </td>
+                                                                        <td class="h5 text-primary" style="width:8%">
+                                                                            <input type="text" class="form-control input-sm" ng-model="newdrug.drug_abs">
+                                                                        </td>
+                                                                        <td class="h5 text-danger" style="width:12%" >
+                                                                            <button class="btn btn-primary input-sm" ng-click="add_hfdrug(newdrug)"><i class="fa fa-arrow-down"></i> Add</button>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                    <tbody ng-repeat="(drung_order,drug) in hf_drugs">
+                                                                    <tr>
+                                                                        <td>{{drung_order+1}}</td>
+                                                                        <td>{{drug.drug_code}}</td>
+                                                                        <td>{{drug.drug_name}}</td>
+                                                                        <td class="text-center"><span class="badge">{{drug.drug_asl}}</span></td>
+                                                                        <td class="text-center"><span class="badge">{{drug.drug_eop}}</span></td>
+                                                                        <td class="h5 text-primary text-center"><span class="badge">{{drug.drug_abs}}</span></td>
+                                                                        <td class="h5 text-danger">
+                                                                            <!--<a href="#" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Edit</a>-->
+                                                                            <a ng-click="remove_drug(drug)" class="btn btn-xs btn-danger"><i class="fa fa-times"></i> Remove</a>
+                                                                            <a ng-click="get_drug_history(drug.drug_id,hf_selected._id)" class="btn btn-xs btn-default"><i class="fa fa-arrow-circle-down"></i> History</a>
+
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr ng-if="drug_histories[drug.drug_id].length >0">
+                                                                        <td colspan="8">
+                                                                            <div class="panel panel-default">
+                                                                                <div class="panel-heading">
+                                                                                    <i class="fa fa-address-book" aria-hidden="true"></i>
+                                                                                    {{drug.drug_name}} request history
+                                                                                    <span class="pull-right">
+                                           <button class="btn btn-default text-success btn-xs" style="margin-top:-8px;" ng-click="get_drug_history(drug.drug_id,hf_selected._id)">
+                                           Refresh history <i class="fa fa-refresh"></i></button>
+                                             <button class="btn btn-danger text-success btn-xs" style="margin-top:-8px;" ng-click="drug_histories[drug.drug_id] = {}">
+                                           Close <i class="fa fa-times" ></i></button>
+                                        </span>
+                                                                                </div>
+                                                                                <div class="panel-body table-responsive">
+
+                                                                                    <table class="table table-sm ">
+                                                                                        <thead>
+                                                                                        <tr>
+                                                                                            <th>#</th>
+                                                                                            <th>Date/Time</th>
+                                                                                            <th class="text-center">Qty old</th>
+                                                                                            <th class="text-center">Qty new</th>
+                                                                                            <th class="text-center">Change</th>
+                                                                                            <th class="text-center">Type</th>
+                                                                                            <th class="text-center">User/Mobile</th>
+                                                                                        </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                        <tr ng-repeat="(aIndex,history) in drug_histories[drug.drug_id]">
+                                                                                            <th scope="row">{{aIndex+1}}</th>
+                                                                                            <td>{{history.createdAt | date:"medium"}}</td>
+                                                                                            <td class="text-center">{{history.drug_abs_old}}</td>
+                                                                                            <td class="text-center">{{history.drug_abs}}</td>
+                                                                                            <td class="text-center">{{history.drug_abs-history.drug_abs_old}}
+
+                                                                                                <i class="fa fa-arrow-up" aria-hidden="true" ng-if="history.drug_abs-history.drug_abs_old>=1" style="color:green;float:right"></i>
+                                                                                                <i class="fa fa-arrow-down" aria-hidden="true" ng-if="history.drug_abs-history.drug_abs_old <0 " style="color:red;float:right"></i>
+
+
+                                                                                            </td>
+                                                                                            <td class="text-center">
+                                                                                                <span class="badge badge-success" ng-if="history.update_type == 'web_register'">{{history.update_type}}</span>
+                                                                                                <span class="badge badge-success" style="background-color:#e29595" ng-if="history.update_type == 'sms_register'">{{history.update_type}}</span>
+                                                                                            </td>
+                                                                                            <td class="text-center">{{history.user_update.username}}</td>
+                                                                                        </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                        </div>
+                                                    </div>
+                                            </section>
+                                        </div><!--chat_area-->
+
+                                    </div>
+                                </div> <!--message_section-->
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </section>
+    </section>
+</section>
+
+
+<!-- Modal -->
+<div class="modal fade" id="HFcreate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">
+                    <span ng-if="!hf.is_edit">New Place/Health facility</span>
+                    <span ng-if="hf.is_edit">Edit {{hf.name}}</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <form name="myForm"></form>
+
+                <div class="row">
+                    <div class="col-sm-12" style="height:450px;overflow:auto">
+                        <!--<div class="form-group">-->
+                            <!--Type: <br />-->
+                            <!--<a class="btn btn-default " ng-class="{'btn-success':hf.place_type =='dt'}" ng-click="set_active_place('dt')"><i class="fa fa-building"></i> District</a>-->
+                            <!--<a class="btn btn-default " ng-class="{'btn-success':hf.place_type =='hf'}" ng-click="set_active_place('hf')"><i class="fa fa-hospital-o"></i> Health center</a>-->
+                            <!--<a class="btn btn-default " ng-class="{'btn-success':hf.place_type =='hp'}" ng-click="set_active_place('hp')"><i class="fa fa fa-home"></i> Health post</a>-->
+                        <!--</div>-->
+
+                        <form name="new_hf">
+                        <div class="form-group">
+                            <span class="form_required">(*)</span> Name of HF:
+                            <span class="form_required" ng-if="new_hf.myname.$invalid">Required</span>
+                            <input class="form-control" name="myname" type="text" ng-model="hf.name" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="form_required">(*)</span> Phone number:
+                            <span class="form_required" ng-if="new_hf.myphone.$invalid">Required</span>
+
+                            <input class="form-control" name="myphone" ng-model="hf.phone" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            VDC/Municipality name: <input class="form-control" name="phone" ng-model="hf.vdc" type="text" >
+                        </div>
+                        <!--<div class="form-group">-->
+                            <!--Address: <input class="form-control" name="address" ng-model="hf.address" type="text" >-->
+                        <!--</div>-->
+                        <div class="form-group">
+                            Reporting Center:
+                            <ui-select ng-model="hf.reporting_center_list.selected" theme="selectize" title="Choose report center">
+                                <ui-select-match placeholder="Select or search a HF...">{{$select.selected.name}}</ui-select-match>
+                                <ui-select-choices repeat="rp_center in list_hf | filter: $select.search">
+                                    <span ng-bind-html="rp_center.name | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
+
+                        </div>
+
+                        <div class="form-group">
+                            Heath Facility notes:
+                            <textarea class="form-control" name="type" ng-model="hf.notes" type="text" ></textarea>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <span class="form_required">(*)</span> Contact Person:
+                            <span class="form_required" ng-if="new_hf.person.$invalid">Required</span>
+<input class="form-control" name="person" ng-model="hf.person" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <span class="form_required">(*)</span> <strong>Contact Person's Mobile: (eg: +84987777890)</strong>
+                            <span class="form_required" ng-if="new_hf.person_mobile.$invalid">Required</span>
+
+                            <input class="form-control" name="person_mobile" ng-model="hf.person_mobile" type="text" required>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" ng-click="createNewHF(hf);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
+                <button type="submit" ng-click="edit_hf(hf);" name="change" class="btn btn-danger btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="hf.is_edit"><i class="fa fa-floppy-o"></i>  Update</button>
+                <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-times"></i> Close</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
