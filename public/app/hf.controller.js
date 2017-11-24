@@ -205,18 +205,20 @@ $scope.edit_hf = function (hf_selected) {
 
 $scope.delete_hf = function (hf_selected) {
     ConfirmBox.confirm('Are you sure?', 'The '+hf_selected.name+' will be permanently removed! This action also delete all associated drugs!!!').then(function() {
-        $http.delete('/db_delete/healthfacilities/' + hf_selected._id).then(function (rs) {
+        $http.get('/db_getDrugs/hfdrugs/' + hf_selected._id).then(function (rs) {
             if (rs.data.status == true) {
-                $scope.get_hfdetail();
-                $scope.choose_hf($scope.list_hf[0]);
-                $http.delete('/db_deleteAll/hfdrugs/' + hf_selected._id).then(function (rs) {
+                toaster.pop('success', "Failed !", hf_selected.name+" has drugs inside ! You must remove all drugs before!", 5000);
+            }else {
+                $http.delete('/db_delete/healthfacilities/' + hf_selected._id).then(function (rs) {
                     if (rs.data.status == true) {
-                        $scope.get_hfdrugs(drug.hf_id);
+                        $scope.get_hfdetail();
+                        $scope.choose_hf($scope.list_hf[0]);
+                        toaster.pop('success', "Success ", hf_selected.name+" has been removed!", 5000);
                     }
                 })
-                toaster.pop('success', "Success ", hf_selected.name+" has been removed!", 5000);
             }
         })
+
     })
 }
 

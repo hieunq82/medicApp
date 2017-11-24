@@ -150,6 +150,7 @@ app.post('/send_message', function(req,res){
 app.get('/messages', function(req,res){
    res.json({});
 })
+
 app.delete('/db_delete/:collection/:object_id', (req,res)=>{
 
     MongoClient.connect(mongoDB, function(err, db) {
@@ -194,38 +195,36 @@ app.delete('/db_delete/:collection/:object_id', (req,res)=>{
 
 
 })
-
-//Delete all drug of HF after delete HF
-app.delete('/db_deleteAll/:collection/:object_id', (req,res)=>{
+//Get all drugs of Health Post
+app.get('/db_getDrugs/:collection/:object_id', (req,res)=>{
 
     MongoClient.connect(mongoDB, function(err, db) {
-    var collection = db.collection(req.params.collection);
+        var collection = db.collection(req.params.collection);
+        collection.find({ "hf_id" : mongoose.Types.ObjectId(req.params.object_id) }, function(err, result) {
+            if(err == null){
+                res.json({
+                    status: true
+                })
+            }else{
+                res.json({
+                    status: false
+                })
+            }
+        });
 
-    collection.remove({ "hf_detail.reporting_center._id" : mongoose.Types.ObjectId(req.params.object_id) }, function(err, result) {
-        if(err == null){
-            res.json({
-                status: true
-            })
-        }else{
-            res.json({
-                status: false
-            })
-        }
-    });
+    })
+
+        var deleteDocument = function(db, callback) {
+        var collection = db.collection(req.params.collection);
+        collection.find({ "hf_id" : req.params.object_id }, function(err, result) {
+            if(err == null){
+                console.log("Find all drugs by HF id !");
+            }
+
+            callback(result);
+        });
+    }
 })
-
-var deleteDocument = function(db, callback) {
-    var collection = db.collection(req.params.collection);
-    collection.remove({ "hf_detail.reporting_center._id" : req.params.object_id }, function(err, result) {
-        if(err == null){
-            console.log("Removed the document with the field a equal to 3");
-        }
-
-        callback(result);
-    });
-}
-})
-
 // app.use('/', (req,res)=>{
 
 //     res.send(SMSCheck.validSmsSyntax('R312 33'));

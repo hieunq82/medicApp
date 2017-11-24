@@ -110,8 +110,8 @@ app.use('/api/app', function(req, res) {
                                     } else if (parseInt(_druginfo.drug_asl) > _request_qty && _request_qty > parseInt(_druginfo.drug_eop)) {
                                         //General task: Send sms to Health Post is "Register Succeed! DRUG CODE: _DRUG_ _QTY_ .Please request drug in quarterly request."
                                         _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Please request drug in quarterly request.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
-                                        // Check ABS > ASL
-                                    } else if (_request_qty > parseInt(_druginfo.drug_asl)) {
+                                        // Check ABS >= ASL
+                                    } else if (_request_qty >= parseInt(_druginfo.drug_asl)) {
                                         //General task: Sent sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_ You have sufficient stock."
                                         _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                         // _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' +_top_stock_mobile, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
