@@ -20,7 +20,7 @@ app.use('/api/app', function(req, res) {
         var _dataDB = req.body.messages;
         var _responseMSG = [];
 
-        //First commit - SON - HieuNQ
+        //Edited by SonLT
         console.log('_SMS_GATEWAY_POST_');
         console.log(_dataDB);
         _dataDB.forEach(function(eachDB){
@@ -113,7 +113,7 @@ app.use('/api/app', function(req, res) {
                                 var _top_stock_mobile = data[0].reporting_center.person_mobile;
                                 if (data.length > 0) {
                                     //Check Quanity Drug
-                                    //Check ABS =< EOP
+                                        //Check ABS =< EOP
                                     if (_request_qty <= parseInt(_druginfo.drug_eop)) {
                                         //General task: Send sms to Reporting Center is " Health Post has low stock of Drug"
                                         _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code, _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
