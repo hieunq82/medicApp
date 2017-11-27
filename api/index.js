@@ -33,17 +33,17 @@ app.use('/api/app', function(req, res) {
                     _task_register = [],
                     drugRegID = '';
 
-                //   var   _syntaxCheck = _smsSyntax[0].toUpperCase();
-                // if (_syntaxCheck == 'R' ){
-                //     //Not found
-                //     _msgTasks ={
-                //         "id": _transCode,
-                //         "to": eachDB.from,
-                //         "type": "reject",
-                //         "content": "Your SMS Syntax is Wrong ! SMS syntax like be R "+_smsSyntax[1].toUpperCase()
-                //     };
-                //     _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be _R_ DRUG_CODE("+_smsSyntax[1].toUpperCase()+") _QTY_ ("+_smsSyntax[2],eachDB.from,'sms_out', 'PENDING',drugRegID));
-                // }else {
+                  var   _syntaxCheck = _smsSyntax[0].toUpperCase();
+                if (_syntaxCheck !== "R" ){
+                    //Not found
+                    _msgTasks ={
+                        "id": _transCode,
+                        "to": eachDB.from,
+                        "type": "reject",
+                        "content": "Your SMS Syntax is Wrong ! SMS syntax like be R "+_smsSyntax[1].toUpperCase()
+                    };
+                    _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be _R_ DRUG_CODE("+_smsSyntax[1].toUpperCase()+") _QTY_ ("+_smsSyntax[2],eachDB.from,'sms_out', 'PENDING',drugRegID));
+                }else {
                     //register syntax sms
                     var _xdata = {
                         "from" : eachDB.from,
@@ -60,7 +60,7 @@ app.use('/api/app', function(req, res) {
                         updatedAt: new Date(),
                         createdAt: new Date()
                     }
-                // }
+                }
 
                 db.collection('drugregisters').insert(_xdata).then(function(data_reg){
                             drugRegID = data_reg.insertedIds[0].toString();
@@ -125,9 +125,9 @@ app.use('/api/app', function(req, res) {
                                         // Check ABS >= ASL
                                     } else if (_request_qty >= parseInt(_druginfo.drug_asl)) {
                                         //General task: Sent sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_ You have sufficient stock."
-                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                        // _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                         //check Reporting Center person_mobile
-                                        // _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' +_top_stock_mobile, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                        _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' + _syntaxCheck, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                     }
                                 } else {
                                     //General task: Sent sms to Health Post if can't find person_mobile of Reposting_Center
@@ -286,6 +286,4 @@ function handleAuth(req, res, options) {
   res.end(JSON.stringify({ err:'Unauthorized' }, null, 2));
   return false;
 }
-
-
 }
