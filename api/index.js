@@ -125,9 +125,9 @@ app.use('/api/app', function(req, res) {
                                         // Check ABS >= ASL
                                     } else if (_request_qty >= parseInt(_druginfo.drug_asl)) {
                                         //General task: Sent sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_ You have sufficient stock."
-                                        // _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                         //check Reporting Center person_mobile
-                                        _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' + _syntaxCheck, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                        // _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' + _syntaxCheck, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                     }
                                 } else {
                                     //General task: Sent sms to Health Post if can't find person_mobile of Reposting_Center
