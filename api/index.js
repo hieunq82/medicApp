@@ -20,6 +20,7 @@ app.use('/api/app', function(req, res) {
         var _dataDB = req.body.messages;
         var _responseMSG = [];
 
+        //First commit - SON
         console.log('_SMS_GATEWAY_POST_');
         console.log(_dataDB);
         _dataDB.forEach(function(eachDB){
@@ -34,7 +35,7 @@ app.use('/api/app', function(req, res) {
                     drugRegID = '';
 
                   var   _syntaxCheck = _smsSyntax[0].toUpperCase();
-                if (_syntaxCheck !== "R" ){
+                if ( _syntaxCheck !== "R" ){
                     //Not found
                     _msgTasks ={
                         "id": _transCode,
