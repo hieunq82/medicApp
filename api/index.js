@@ -20,7 +20,7 @@ app.use('/api/app', function(req, res) {
         var _dataDB = req.body.messages;
         var _responseMSG = [];
 
-        //First commit - SON
+        //First commit - SON - HieuNQ
         console.log('_SMS_GATEWAY_POST_');
         console.log(_dataDB);
         _dataDB.forEach(function(eachDB){
