@@ -28,28 +28,13 @@ app.use('/api/app', function(req, res) {
             //update View
             eachDB.type = "sms_in";
             eachDB.content = eachDB.content.replace(/\s+/g, ' ');
+            // get and check syntax sms
             var _smsSyntax = eachDB.content.split(' '),
                 _transCode = uuidV1(),
                 _msgTasks = {},
                 _task_register = [],
                 drugRegID = '';
-
             if(SMSCheck.validSmsSyntax(eachDB.content) == true){
-
-
-                 //check SMS syntax
-                 // var   _syntaxCheckFirst = _smsSyntax[0].toString().toUpperCase();
-                //check SMS syntax - if the first character is't R.
-//                 console.log(_smsSyntax[0]);
-//                 console.log(_smsSyntax[0].toString().search('R'));
-//                 if ( _smsSyntax[0].toString().search('R') == -1 ){
-//                     //check
-// console.log("COME HERE");
-//                     _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be _R_ DRUG_CODE("+_smsSyntax[1].toUpperCase()+") _QTY_ ("+_smsSyntax[2] + ")",eachDB.from,'sms_out', 'PENDING',drugRegID));
-//                 // check SMS syntax - if drug qty is not number
-//                 // }else if (_syntaxCheckThree == false) {
-//                     // _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be _R_ DRUG_CODE("+_smsSyntax[1].toUpperCase()+") _QTY_ ("+_smsSyntax[2] + ")",eachDB.from,'sms_out', 'PENDING',drugRegID));
-//                 }else {
                     //register syntax sms
                     var _xdata = {
                         "from" : eachDB.from,
@@ -66,8 +51,7 @@ app.use('/api/app', function(req, res) {
                         updatedAt: new Date(),
                         createdAt: new Date()
                     }
-                // }
-
+                //Insert drug register to drugregisters table in database
                 db.collection('drugregisters').insert(_xdata).then(function(data_reg){
                             drugRegID = data_reg.insertedIds[0].toString();
 
@@ -75,7 +59,6 @@ app.use('/api/app', function(req, res) {
                 db.collection('hfdrugs').find({"drug_code": _smsSyntax[1].toUpperCase(),"hf_detail.person_mobile": eachDB.from}).toArray(function(error, data){
                     if(error == null){
                         if(data.length > 0){
-                            //_task_register.push(create_task("Register Succeed! DRUG CODE: "+_smsSyntax[1]+", QTY: "+_smsSyntax[2],eachDB.from,'sms_default','PENDING',drugRegID));
                             //Found it
                             var _request_qty = parseInt(_smsSyntax[2]),
                                 _druginfo = data[0];
@@ -117,8 +100,8 @@ app.use('/api/app', function(req, res) {
                             if (error == null) {
                                 var _top_stock_mobile = data[0].reporting_center.person_mobile;
                                 if (data.length > 0) {
-                                    //Check Quanity Drug
-                                        //Check ABS =< EOP
+                                    //Check Quantity Drug
+                                    //Check ABS =< EOP
                                     if (_request_qty <= parseInt(_druginfo.drug_eop)) {
                                         //General task: Send sms to Reporting Center is " Health Post has low stock of Drug"
                                         _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code, _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
@@ -141,7 +124,7 @@ app.use('/api/app', function(req, res) {
                                 }
                             }else {
                                 //Drug Failed
-                                _task_register.push(create_task("Registration Drug Failed ! Please check your SMS syntax and SMS-Gateway connecting internet: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2], _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                _task_register.push(create_task("Registration Drug Failed ! Your Reporting Center is WRONG or NOT EXIST!", _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                             }
                         });
                         // sonlt add Succeed notification
@@ -175,19 +158,8 @@ app.use('/api/app', function(req, res) {
 
             });
             }else{
-                // var response_msg = {
-                //     "id": uuidV1(),
-                //     "to": eachDB.from,
-                //     "type": "sms_out",
-                //     "content": "The registration format is incorrect, ensure the message starts with R followed by space and DrugCode, space and DrugQuantity (Ex: R OXI 33)"
-                // };
-                _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be R_DRUG_CODE_QTY",eachDB.from, 'sms_out', 'PENDING', drugRegID));
-
-                // _responseMSG.push(response_msg); //Push to schedule task
-
-                // db.collection('messages').insert(eachDB).then(function(rs){
-                //     console.log('Inserted to messages collection!');
-                // });
+                //Check SMS Syntax wrong.
+                _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be R_DRUG-CODE_QTY",eachDB.from, 'sms_out', 'PENDING', drugRegID));
             }
         })
 
