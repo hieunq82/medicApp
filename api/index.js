@@ -27,140 +27,191 @@ app.use('/api/app', function(req, res) {
         _dataDB.forEach(function(eachDB){
             //update View
             eachDB.type = "sms_in";
+            //Remove Space in sms
             eachDB.content = eachDB.content.replace(/\s+/g, ' ');
-            // get and check syntax sms
+            //Get and check syntax sms
             var _smsSyntax = eachDB.content.split(' '),
                 _transCode = uuidV1(),
                 _msgTasks = {},
                 _task_register = [],
                 drugRegID = '';
-            if(SMSCheck.validSmsSyntax(eachDB.content) == true){
-                    //register syntax sms
-                    var _xdata = {
-                        "from" : eachDB.from,
-                        "form" : "R",
-                        "state": "PENDING",
-                        "reported_date" : new Date().toString(),
-                        "sms_message" : {
-                            "form" : "R",
-                            "type" : "sms_message",
-                            "gateway_ref" : "e6f0bb62-de84-4d67-b282-1dd670a487ac",
-                            "from" : eachDB.from,
-                            "message" : eachDB.content
-                        },
-                        updatedAt: new Date(),
-                        createdAt: new Date()
-                    }
-                //Insert drug register to drugregisters table in database
-                db.collection('drugregisters').insert(_xdata).then(function(data_reg){
-                            drugRegID = data_reg.insertedIds[0].toString();
-
-                //find drug registed in DB with person mobile of Health Post
-                db.collection('hfdrugs').find({"drug_code": _smsSyntax[1].toUpperCase(),"hf_detail.person_mobile": eachDB.from}).toArray(function(error, data){
-                    if(error == null){
-                        if(data.length > 0){
-                            //Found it
-                            var _request_qty = parseInt(_smsSyntax[2]),
-                                _druginfo = data[0];
-
-                            //Step 0: Select HF drug
-                            db.collection('hfdrugs').update(
-                                {"_id": _druginfo._id},
-                                {$set: { "drug_abs": _request_qty }},
-                                {upsert: false}, function(update_err,update_data){
-                    if(update_err){
-                        var _hf_stock_mobile_error = _druginfo.hf_detail.person_mobile;
-                        //Can't update
-                        _task_register.push(create_task("Register Fail ! DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2], _hf_stock_mobile_error, 'sms_out', 'PENDING', drugRegID));
-                    }else{
-                        //Insert Drug was registed to Database
-                        var _drug_histories = _druginfo;
-                        _drug_histories._id = undefined;
-                        _drug_histories.drug_abs_old = _druginfo.drug_abs;
-                        _drug_histories.drug_abs = _request_qty;
-                        _drug_histories.update_type = "sms_register";
-                        _drug_histories.user_update = {
-                            username:eachDB.from
-                        };
-                        _drug_histories.createdAt = new Date();
-                        _drug_histories.updatedAt = new Date();
-
-                        db.collection('drug_histories').insert(_drug_histories).then(function(history){
-                            if(history.result.ok == 1){
-                                //success
+            //Check user phone number in Database
+            var _smsUserPhoneNumber = eachDB.from;
+            //Find user phone number in HealthFacilities Table Database
+            db.collection('healthfacilities').find({"person_mobile": _smsUserPhoneNumber }).toArray(function(error, data){
+                if (data.length > 0 ){
+                    // console.log('----Reporting Center Level 1----');
+                    // console.log(data[0].reporting_center);
+                    console.log('----Check person_mobile successful----');
+                    if (data[0].reporting_center === undefined){
+                        //Not send anything
+                        console.log('Reporting Center do not need to send SMS');
+                    }else {
+                        if(SMSCheck.validSmsSyntax(eachDB.content) == true){
+                            //register syntax sms
+                            var _xdata = {
+                                "from" : eachDB.from,
+                                "form" : "R",
+                                "state": "PENDING",
+                                "reported_date" : new Date().toString(),
+                                "sms_message" : {
+                                    "form" : "R",
+                                    "type" : "sms_message",
+                                    "gateway_ref" : "e6f0bb62-de84-4d67-b282-1dd670a487ac",
+                                    "from" : eachDB.from,
+                                    "message" : eachDB.content
+                                },
+                                updatedAt: new Date(),
+                                createdAt: new Date()
                             }
-                            console.log(history);
-                        })
+                            //Insert drug register to drugregisters table in database
+                            db.collection('drugregisters').insert(_xdata).then(function(data_reg){
+                                drugRegID = data_reg.insertedIds[0].toString();
+                                console.log('----Insert drug to database successful----');
+                                //find drug registed in DB with person mobile of Health Post
+                                db.collection('hfdrugs').find({"drug_code": _smsSyntax[1].toUpperCase(),"hf_detail.person_mobile": eachDB.from}).toArray(function(error, data){
+                                    if(error == null){
+                                        if(data.length > 0){
+                                            console.log('----Find drug in database successful----');
+                                            //Found it
+                                            var _request_qty = parseInt(_smsSyntax[2]),
+                                                _druginfo = data[0];
 
-                       //After update ABS
-                        var _hf_stock_mobile = _druginfo.hf_detail.person_mobile;
-                        // var _top_stock_mobile = _druginfo.hf_detail.reporting_center.person_mobile;
-                       //  sonlt add Checking person_mobile of Health Post with person_mobile registed in Reporting Center
-                        db.collection('healthfacilities').find({"person_mobile": _hf_stock_mobile}).toArray(function(error, data){
-                            if (error == null) {
-                                var _top_stock_mobile = data[0].reporting_center.person_mobile;
-                                if (data.length > 0) {
-                                    //Check Quantity Drug
-                                    //Check ABS =< EOP
-                                    if (_request_qty <= parseInt(_druginfo.drug_eop)) {
-                                        //General task: Send sms to Reporting Center is " Health Post has low stock of Drug"
-                                        _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code, _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
-                                        //General task: Send sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_. Your balance stock is less than EOP (EOP quanity) level."
-                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Your balance stock is less than EOP (' + _druginfo.drug_eop + ') level.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
-                                        //Check ASL > ABS > EOP:
-                                    } else if (parseInt(_druginfo.drug_asl) > _request_qty && _request_qty > parseInt(_druginfo.drug_eop)) {
-                                        //General task: Send sms to Health Post is "Register Succeed! DRUG CODE: _DRUG_ _QTY_ .Please request drug in quarterly request."
-                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Please request drug in quarterly request.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
-                                        // Check ABS >= ASL
-                                    } else if (_request_qty >= parseInt(_druginfo.drug_asl)) {
-                                        //General task: Sent sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_ You have sufficient stock."
-                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
-                                        //check Reporting Center person_mobile
-                                        // _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' + _syntaxCheck, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                            //Step 0: Select HF drug
+                                            db.collection('hfdrugs').update(
+                                                {"_id": _druginfo._id},
+                                                {$set: { "drug_abs": _request_qty }},
+                                                {upsert: false}, function(update_err,update_data){
+                                                    if(update_err){
+                                                        var _hf_stock_mobile_error = _druginfo.hf_detail.person_mobile;
+                                                        //Can't update
+                                                        _task_register.push(create_task("Register Fail ! DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2], _hf_stock_mobile_error, 'sms_out', 'PENDING', drugRegID));
+                                                    }else{
+                                                        //Insert Drug was registed to Database
+                                                        var _drug_histories = _druginfo;
+                                                        _drug_histories._id = undefined;
+                                                        _drug_histories.drug_abs_old = _druginfo.drug_abs;
+                                                        _drug_histories.drug_abs = _request_qty;
+                                                        _drug_histories.update_type = "sms_register";
+                                                        _drug_histories.user_update = {
+                                                            username:eachDB.from
+                                                        };
+                                                        _drug_histories.createdAt = new Date();
+                                                        _drug_histories.updatedAt = new Date();
+
+                                                        db.collection('drug_histories').insert(_drug_histories).then(function(history){
+                                                            if(history.result.ok == 1){
+                                                                //success
+                                                            }
+                                                            console.log(history);
+                                                        })
+
+                                                        //After update ABS
+                                                        var _hf_stock_mobile = _druginfo.hf_detail.person_mobile;
+                                                        // var _top_stock_mobile = _druginfo.hf_detail.reporting_center.person_mobile;
+                                                        //  sonlt add Checking person_mobile of Health Post with person_mobile registed in Reporting Center
+                                                        db.collection('healthfacilities').find({"person_mobile": _hf_stock_mobile}).toArray(function(error, data){
+                                                            if (error == null) {
+                                                                var _top_stock_mobile = data[0].reporting_center.person_mobile;
+                                                                if (data.length > 0) {
+                                                                    //Check Quantity Drug
+                                                                    //Check ABS =< EOP
+                                                                    if (_request_qty <= parseInt(_druginfo.drug_eop)) {
+                                                                        //General task: Send sms to Reporting Center is " Health Post has low stock of Drug"
+                                                                        _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code, _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                        //General task: Send sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_. Your balance stock is less than EOP (EOP quanity) level."
+                                                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Your balance stock is less than EOP (' + _druginfo.drug_eop + ') level.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                        //Check ASL > ABS > EOP:
+                                                                    } else if (parseInt(_druginfo.drug_asl) > _request_qty && _request_qty > parseInt(_druginfo.drug_eop)) {
+                                                                        //General task: Send sms to Health Post is "Register Succeed! DRUG CODE: _DRUG_ _QTY_ .Please request drug in quarterly request."
+                                                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Please request drug in quarterly request.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                        // Check ABS >= ASL
+                                                                    } else if (_request_qty >= parseInt(_druginfo.drug_asl)) {
+                                                                        //General task: Sent sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_ You have sufficient stock."
+                                                                        _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. You have sufficient stock.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                        //check Reporting Center person_mobile
+                                                                        // _task_register.push(create_task('Register DRUG Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + ' RC ' + _syntaxCheck, _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                    }
+                                                                    console.log('----Push drug register successful----');
+                                                                } else {
+                                                                    //General task: Sent sms to Health Post if can't find person_mobile of Reposting_Center
+                                                                    _task_register.push(create_task('Register Fail! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Your Reporting Center is WRONG or NOT EXIST.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                }
+                                                            }else {
+                                                                //Drug Failed
+                                                                _task_register.push(create_task("Registration Drug Failed ! Your Reporting Center is WRONG or NOT EXIST!", _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                            }
+                                                        });
+                                                        // sonlt add Succeed notification
+                                                        // _task_register.push(create_task("Register DRUG Succeed! DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out','PENDING',drugRegID));
+                                                    }
+                                                }
+                                            )
+                                        }else{
+                                            //Not found
+                                            _msgTasks ={
+                                                "id": _transCode,
+                                                "to": eachDB.from,
+                                                "type": "sms_out",
+                                                "content": "Drug not found! Please check your DRUG CODE: "+_smsSyntax[1].toUpperCase()
+                                            };
+                                            _task_register.push(create_task("Drug not found! Please check your DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out', 'PENDING',drugRegID));
+                                        }
+                                        _responseMSG.push(_msgTasks);
+                                    }else {
+                                        //Registration Drug Failed
+                                        _msgTasks ={
+                                            "id": _transCode,
+                                            "to": eachDB.from,
+                                            "type": "sms_out",
+                                            "content": "Registration Drug Failed: "+_smsSyntax[1].toUpperCase()
+                                        };
+                                        _task_register.push(create_task("Registration Drug Failed "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out','PENDING',drugRegID));
+                                    }
+                                    _responseMSG.push(_msgTasks);
+                                });
+
+                            });
+                        }else{
+                            //Check SMS Syntax wrong.
+                            db.collection('healthfacilities').find({"person_mobile": eachDB.from }).toArray(function(error, data){
+                                if (error == null){
+                                    // check register mobile in health post
+                                    var _personMobileRegister = data[0].person_mobile;
+                                    if (data[0].reporting_center === undefined) {
+                                        //Don't sent to reporting center
+                                        //sent warning SMS syntax wrong !
+                                        console.log('----Reporting Center undefined----');
+                                    }else {
+                                        // console.log('----Reporting Center Level 2----');
+                                        // console.log(data[0].reporting_center);
+                                         //Sent SMS warning to Register
+                                         _task_register.push(create_task("The registration format is incorrect, ensure the message starts with R followed by space and DrugCode, space and DrugQuantity (Ex: R OXI 33)",_personMobileRegister, 'sms_out', 'PENDING', drugRegID));
+                                        console.log('----Send SMS syntax wrong to register successful----');
                                     }
                                 } else {
-                                    //General task: Sent sms to Health Post if can't find person_mobile of Reposting_Center
-                                    _task_register.push(create_task('Register Fail! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Your Reporting Center is WRONG or NOT EXIST.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                    //sent warning SMS syntax wrong !
+                                    var response_msg = {
+                                        "id": uuidV1(),
+                                        "to": eachDB.from,
+                                        "type": "sms_out",
+                                        "content": "SMS syntax wrong !"
+                                    };
+                                    _responseMSG.push(response_msg); //Push to schedule task
                                 }
-                            }else {
-                                //Drug Failed
-                                _task_register.push(create_task("Registration Drug Failed ! Your Reporting Center is WRONG or NOT EXIST!", _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
-                            }
-                        });
-                        // sonlt add Succeed notification
-                        // _task_register.push(create_task("Register DRUG Succeed! DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out','PENDING',drugRegID));
-                    }
-                                }
-                            )
-                        }else{
-                            //Not found
-                            _msgTasks ={
-                                "id": _transCode,
-                                "to": eachDB.from,
-                                "type": "reject",
-                                "content": "Drug not found! Please check your DRUG CODE: "+_smsSyntax[1].toUpperCase()
-                            };
-                            _task_register.push(create_task("Drug not found! Please check your DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out', 'PENDING',drugRegID));
-                        }
-                        _responseMSG.push(_msgTasks);
-                    }else {
-                        //Registration Drug Failed
-                        _msgTasks ={
-                            "id": _transCode,
-                            "to": eachDB.from,
-                            "type": "reject",
-                            "content": "Registration Drug Failed: "+_smsSyntax[1].toUpperCase()
-                        };
-                        _task_register.push(create_task("Registration Drug Failed "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out','PENDING',drugRegID));
-                    }
-                    _responseMSG.push(_msgTasks);
-                });
+                            })
 
-            });
-            }else{
-                //Check SMS Syntax wrong.
-                _task_register.push(create_task("Your SMS Syntax is Wrong ! SMS syntax like be R_DRUG-CODE_QTY",eachDB.from, 'sms_out', 'PENDING', drugRegID));
-            }
+                            db.collection('messages').insert(eachDB).then(function(rs){
+                                console.log('Inserted to messages collection!');
+                            });
+                        }
+                    }
+                }else {
+                    // User phone number not exist in the system
+                }
+            })
+            // ---End check user phone number in Database
+
         })
 
               //Check status
