@@ -156,6 +156,7 @@ app.use('/api/app', function(req, res) {
                                                 "content": "Drug not found! Please check your DRUG CODE: "+_smsSyntax[1].toUpperCase()
                                             };
                                             _task_register.push(create_task("Drug not found! Please check your DRUG CODE: "+_smsSyntax[1].toUpperCase()+", QTY: "+_smsSyntax[2],eachDB.from,'sms_out', 'PENDING',drugRegID));
+                                            console.log('----Drug not found! Message sent successful----');
                                         }
                                         _responseMSG.push(_msgTasks);
                                     }else {
@@ -200,15 +201,19 @@ app.use('/api/app', function(req, res) {
                                     _responseMSG.push(response_msg); //Push to schedule task
                                 }
                             })
-
-                            db.collection('messages').insert(eachDB).then(function(rs){
-                                console.log('Inserted to messages collection!');
-                            });
+                            //Insert messages to database
+                            // db.collection('messages').insert(eachDB).then(function(rs){
+                            //     console.log('Inserted to messages collection!');
+                            // });
                         }
                     }
                 }else {
                     // User phone number not exist in the system
                 }
+                //Insert messages to database
+                db.collection('messages').insert(eachDB).then(function(rs){
+                    console.log('Inserted to messages collection!');
+                });
             })
             // ---End check user phone number in Database
 
