@@ -47,10 +47,12 @@ app.use('/api/app', function(req, res) {
                         //Not send anything
                         console.log('Reporting Center do not need to send SMS');
                     }else {
+                        var _hfname = data[0].name;
                         if(SMSCheck.validSmsSyntax(eachDB.content) == true){
                             //register syntax sms
                             var _xdata = {
                                 "from" : eachDB.from,
+                                "name" : _hfname,
                                 "form" : "R",
                                 "state": "PENDING",
                                 "reported_date" : new Date().toString(),
@@ -64,6 +66,7 @@ app.use('/api/app', function(req, res) {
                                 updatedAt: new Date(),
                                 createdAt: new Date()
                             }
+                            console.log(_xdata);
                             //Insert drug register to drugregisters table in database
                             db.collection('drugregisters').insert(_xdata).then(function(data_reg){
                                 drugRegID = data_reg.insertedIds[0].toString();
@@ -118,7 +121,7 @@ app.use('/api/app', function(req, res) {
                                                                     //Check ABS =< EOP
                                                                     if (_request_qty <= parseInt(_druginfo.drug_eop)) {
                                                                         //General task: Send sms to Reporting Center is " Health Post has low stock of Drug"
-                                                                        _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code, _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                        _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code + ', QTY:' + _smsSyntax[2] + '(' + _druginfo.drug_eop + ') level.' , _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                                                         //General task: Send sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_. Your balance stock is less than EOP (EOP quanity) level."
                                                                         _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Your balance stock is less than EOP (' + _druginfo.drug_eop + ') level.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                                                         //Check ASL > ABS > EOP:
@@ -211,7 +214,17 @@ app.use('/api/app', function(req, res) {
                     // User phone number not exist in the system
                 }
                 //Insert messages to database
-                db.collection('messages').insert(eachDB).then(function(rs){
+                var _messages = {
+                    "sms_received" : eachDB.sms_received,
+                    "sms_sent" : eachDB.sms_sent,
+                    "content" : eachDB.content,
+                    "from" : eachDB.from,
+                    "id" : eachDB.id,
+                    "type" : eachDB.type,
+                    updatedAt: new Date(),
+                    createdAt: new Date()
+                }
+                db.collection('messages').insert(_messages).then(function(rs){
                     console.log('Inserted to messages collection!');
                 });
             })

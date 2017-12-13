@@ -2,6 +2,7 @@ angular.module('drugmonApp').controller('ReportCtrl', function($scope,$http) {
 
     $scope.list_register = [];
     $scope.msg = {};
+    $scope.list_register_hf = [];
 
     $scope.momentjs = moment;
     $scope.get_messages = function(){
@@ -41,10 +42,6 @@ angular.module('drugmonApp').controller('ReportCtrl', function($scope,$http) {
                 $scope.hf_drugs = [];
             })
         })
-
-
-
-
     }
 
     $scope.get_messages();
