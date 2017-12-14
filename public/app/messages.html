@@ -28,18 +28,19 @@
 
                                                         <div class="member_list">
                                                             <ul class="list-unstyled">
-                                                                <li class="left clearfix" ng-repeat="(pindex,message) in list_mesages |  orderBy:'-createdAt' | filter:filterMessage" ng-click="set_active_index(pindex)" ng-class="{'active_li': detail_messages.index == pindex}">
+                                                                <li class="left clearfix" ng-repeat="(pindex,message) in list_mesages | filter:filterMessage" ng-click="set_active_index(pindex)" ng-class="{'active_li': detail_messages.index == pindex}">
                                                                      <span class="chat-img pull-left">
                                                                      <img src="/assets/images/default-avatar.png" alt="User Avatar" class="img-circle">
                                                                      </span>
                                                                     <div class="chat-body clearfix">
                                                                         <div class="header_sec ">
-                                                                            <strong class="primary-font">{{message.from}}</strong> <strong class="pull-right">
-                                                                            -</strong>
+                                                                            <strong class="primary-font">{{message.from}}</strong>
+                                                                            <strong class="pull-right">
+                                                                                {{momentjs(message.createdAt).format('HH:mm MM-DD-YYYY')}}
+                                                                            </strong>
                                                                         </div>
                                                                         <div class="contact_sec">
-                                                                            -
-                                                                            <span class="badge pull-right">{{message.messages.length}}</span>
+                                                                           <span class="badge pull-right">{{message.messages.length}}</span>
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -70,16 +71,18 @@
                                                                 </ul>
                                                             </div></div>
                                                         </div><!--new_message_head-->
-
+                                                        <div ng-if="detail_messages !== undefined ">
                                                         <div class="chat_area" style="height:100% !important;">
                                                             <ul class="list-unstyled">
-                                                                <li class="left clearfix" ng-repeat="detail in detail_messages.messages">
+                                                                <li class="left clearfix">
                                                                      <span class="chat-img1 pull-left">
                                                                      <img src="/assets/images/default-avatar.png" alt="User Avatar" class="img-circle">
                                                                      </span>
                                                                     <div class="chat-body1 clearfix body_mess">
-                                                                        <p>{{detail.content}}</p>
-                                                                        <div class="chat_time pull-right">09:40PM</div>
+                                                                        <p>{{detail_messages.content}}</p>
+                                                                        <div class="chat_time pull-right">
+                                                                            {{momentjs(detail_messages.createdAt).format('HH:mm:ss MM-DD-YYYY')}}
+                                                                        </div>
                                                                     </div>
                                                                 </li>
 
@@ -98,6 +101,7 @@
 
                                                             </ul>
                                                         </div><!--chat_area-->
+                                                        </div><!--end-->
                                                         <div class="message_write">
                                                             <textarea class="form-control" placeholder="type a message"></textarea>
                                                             <div class="clearfix"></div>
