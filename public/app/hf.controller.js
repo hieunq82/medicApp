@@ -164,8 +164,62 @@ $scope.add_hfdrug = function(drug){
             })
         }
     })
+}
+$scope.edit_drug = function (drug) {
+    var _params = {
+        "params": {
+            "$eq": {
+                "drug_code": (drug.drug_push && drug.drug_push.selected ? drug.drug_push.selected.drug_code : ''),
+                "hf_id": $scope.hf_selected._id
+            }
+        }
+    }
+    var _hf_id = {
+        "params": {
+            "$eq": {
+                "hf_id": $scope.hf_selected._id
+            }
+        }
+    }
+    console.log('--params--');
+    console.log(_params);
+    if ((drug.drug_push && drug.drug_push.selected ? drug.drug_push.selected.drug_code : '') == '') {
+        toaster.pop('error', "Error ", "You do not choose drug ! Please choose drug !", 5000);
+    }else {
+        $http.post('/hfdrugs/list',_hf_id).then(function(rs){
+            $scope.hf_drugsdetail = rs.data.docs;
+            $scope.hf_drugsdetail.forEach(function (hf_detail) {
+                if (hf_detail.drug_code == drug.drug_push.selected.drug_code ){
+                    ConfirmBox.confirm('WARNING !', 'Drug is existed on this HF ! Do you want to update '+drug.drug_push.selected.drug_code+' ?').then(function(){
+                        $http.post('/hfdrugs/list',_params).then(function(rs){
+                            if(rs.data.responseCode == 0 && rs.data.docs.length > 0){
+                                $scope.hf_drugs_detail = rs.data.docs[0];
+                                $scope.hf_drugs_id = $scope.hf_drugs_detail._id;
+                                var tmp_hfdrug = {
+                                    data : {
+                                        drug_asl: parseInt(drug.drug_asl),
+                                        drug_eop: parseInt(drug.drug_eop),
+                                        drug_abs: parseInt(drug.drug_abs),
+                                    }
+                                }
+                                $http.put('/hfdrugs/' + $scope.hf_drugs_id, tmp_hfdrug).then(function(rs){
+                                    if(rs.data.responseCode == 0){
+                                        $scope.newdrug = {};
+                                        $scope.hf_drugs.push(tmp_hfdrug.data);
+                                        $scope.get_hfdrugs($scope.hf_selected._id);
+                                        toaster.pop('success', "Success ", "Drug was updated to "+$scope.hf_selected.name, 5000);
+                                    }
+                                })
+                            }
+                        })
+                    })
+                }else {
+                    toaster.pop('error', "Error ", "Drug is not exist!", 5000);
+                }
+            })
+        })
 
-
+    }
 }
 
 $scope.remove_drug = function (drug) {
@@ -200,17 +254,39 @@ $scope.edit_hf = function (hf_selected) {
             ModalControl.closeModal('HFcreate');
         }
     })
-
 }
 
 $scope.delete_hf = function (hf_selected) {
-    ConfirmBox.confirm('Are you sure?', 'The '+hf_selected.name+' will be permanently removed! This action also delete all associated drugs!!!').then(function() {
-        $http.get('/db_getDrugs/hfdrugs/' + hf_selected._id).then(function (rs) {
+    ConfirmBox.confirm('WARNING !', 'Are you sure? All drugs in '+hf_selected.name+' will be permanently removed!').then(function() {
+        var _xdata = {
+            "params": {
+                "$eq":{
+                    "hf_id":hf_selected._id
+                }
+            }
+        }
+        console.log('--Params--');
+        console.log(_xdata);
+        $http.delete('/db_delete/healthfacilities/' + hf_selected._id).then(function (rs) {
             if (rs.data.status == true) {
-                toaster.pop('success', "Failed !", hf_selected.name+" has drugs inside ! You must remove all drugs before!", 5000);
-            }else {
-                $http.delete('/db_delete/healthfacilities/' + hf_selected._id).then(function (rs) {
-                    if (rs.data.status == true) {
+                $http.post('/hfdrugs/list', _xdata).then(function (rs) {
+                    console.log('---HF detail---');
+                    $scope.hf_detal = rs.data.docs;
+                    console.log($scope.hf_detal);
+                    if (rs.data.docs.length > 0) {
+                        $scope.hf_detal.forEach(function (drugs) {
+                            console.log('--- DRUGS----');
+                            console.log(drugs);
+                            $http.delete('/db_delete/hfdrugs/' + drugs._id).then(function (rs) {
+                                $scope.get_hfdrugs(drugs.hf_id);
+                                console.log('All drug in HF have successfully deleted');
+                            })
+                        })
+                        $scope.get_hfdetail();
+                        $scope.choose_hf($scope.list_hf[0]);
+                        toaster.pop('success', "Success ", hf_selected.name+" has been removed!", 5000);
+                    } else {
+                        console.log('NO DRUG IN HF');
                         $scope.get_hfdetail();
                         $scope.choose_hf($scope.list_hf[0]);
                         toaster.pop('success', "Success ", hf_selected.name+" has been removed!", 5000);
@@ -218,7 +294,6 @@ $scope.delete_hf = function (hf_selected) {
                 })
             }
         })
-
     })
 }
 

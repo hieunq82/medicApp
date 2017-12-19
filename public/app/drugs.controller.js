@@ -109,7 +109,7 @@ $scope.deleteDrugCat = function (drug) {
 
 }
 $scope.deleteDrug = function(drug){
-    ConfirmBox.confirm('Are you sure?', 'The dug '+drug.drug_name+' (code: '+drug.drug_code+') will be deleted?').then(function(){
+    ConfirmBox.confirm('Are you sure?', 'The dug '+drug.drug_name+' (code: '+drug.drug_code+') will be DELETED in all The Health Facility?').then(function(){
         var del_data = {
             data: {"hardDelete": true}
         }
@@ -117,12 +117,31 @@ $scope.deleteDrug = function(drug){
             if(rs.data.status == true){
                 $scope.get_drugdetail();
                 toaster.pop('success', "Success ", "Drug have successfully deleted", 5000);
+                console.log('Drug have successfully deleted');
+                console.log(drug.drug_code);
+                $http.post('/hfdrugs/list', {}).then(function (rs) {
+                    if(rs.data.docs !== undefined){
+                        $scope.hf_drug = rs.data.docs;
+                        $scope.hf_drug_code = drug.drug_code;
+                        $scope.hf_drug.forEach(function (hf_drugs){
+                          if ($scope.hf_drug_code == hf_drugs.drug_code){
+                              $http.delete('/db_delete/hfdrugs/'+hf_drugs._id, del_data).then(function(rs){
+                                  toaster.pop('success', "Success ", "The drug have successfully deleted in all the health facility", 5000);
+                                  console.log('All drug in HF have successfully deleted');
+                              })
+                          }
+                        })
+                    }else {
+                        console.log('This Drug not exit in any health facility ! ');
+                    }
+                })
 
             }else{
                 toaster.pop('error', "Error", "Can not remove this drug, please try again!", 5000);
 
             }
         })
+
     })
 }
 

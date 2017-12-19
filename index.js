@@ -226,6 +226,37 @@ app.get('/db_getDrugs/:collection/:object_id', (req,res)=>{
     }
 })
 
+//Get all hfdrugs by drug code
+app.get('/db_getHfdrug/:collection/:object_id', (req,res)=>{
+
+    MongoClient.connect(mongoDB, function(err, db) {
+        var collection = db.collection(req.params.collection);
+        collection.find({ "drug_code" : mongoose.Types.ObjectId(req.params.object_id) }, function(err, result) {
+            if(err == null){
+                res.json({
+                    status: true
+                })
+            }else{
+                res.json({
+                    status: false
+                })
+            }
+        });
+
+    })
+
+        var deleteDocument = function(db, callback) {
+        var collection = db.collection(req.params.collection);
+        collection.find({ "drug_code" : req.params.object_id }, function(err, result) {
+            if(err == null){
+                console.log("Find all HF by drug_code !");
+            }
+
+            callback(result);
+        });
+    }
+})
+
 // app.use('/', (req,res)=>{
 
 //     res.send(SMSCheck.validSmsSyntax('R312 33'));

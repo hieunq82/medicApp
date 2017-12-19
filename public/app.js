@@ -36,6 +36,10 @@ angular.module('drugmonApp', [
         url: '/drugs.html',
         templateUrl: 'app/drugs.html',
         controller: 'DrugsCtrl'
+    }).state('healthfacilitytype', {
+        url: '/health-facility-type.html',
+        templateUrl: 'app/health-facility-type.html',
+        controller: 'HFTypeCtrl'
     }).state('userregister', {
         url: '/register-drugs.html',
         templateUrl: 'app/register_drugs.html',

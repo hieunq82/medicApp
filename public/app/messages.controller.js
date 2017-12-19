@@ -37,37 +37,44 @@ angular.module('drugmonApp').controller('MessagesCtrl', function ($scope, $http)
         console.log($scope.detail_messages);
     }
 
-    $scope.get_messages();
-
     $scope.detail_contact = [];
     $scope.get_hfdetail = function(){
         $http.post('/healthfacility/list', {}).then(function(rs){
             $scope.detail_contact = rs.data.docs;
-
+            $scope.detail_contact.selected = rs.data.docs;
             console.log('---Health Facility---')
             console.log($scope.detail_contact)
+
         }, function(){
             console.log('Error!');
         })
     }
-    $scope.get_hfdetail();
 
+    $scope.get_messages();
+    $scope.get_hfdetail();
+    $scope.msgPhone= [];
     $scope.sendMsg = function (msg) {
-        var _xdata = {
-            "data": {
-                "id": generateUUID(),
-                "to": msg.to,
-                "content": msg.content,
-                "state": "PENDING",
-                "type": "sms_custom",
-                "history": []
+        console.log(msg.to);
+        $scope.msgPhone= msg.to;
+        $scope.msgPhone.forEach(function (contact){
+            console.log('---Phone number---' );
+            console.log(contact);
+            var _xdata = {
+                "data": {
+                    "id": generateUUID(),
+                    "to": contact.person_mobile,
+                    "content": msg.content,
+                    "state": "PENDING",
+                    "type": "sms_custom",
+                    "history": []
+                }
             }
-        }
-        $http.post('/messages_out', _xdata).then(function (rs) {
-            if (rs.data.status === true) alert('Sent!')
+            $http.post('/messages_out', _xdata).then(function (rs) {
+                if (rs.data.status === true) alert('Sent!')
+            })
+            console.log('--Send messeges--');
+            console.log(_xdata);
         })
-    console.log('--Send messeges--');
-    console.log(_xdata);
     }
 
     var groupArrBy = function (xs, key) {

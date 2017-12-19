@@ -168,9 +168,10 @@
                                                                         </td>
                                                                         <td class="h5 text-danger" style="width:12%" >
                                                                             <button class="btn btn-primary input-sm" ng-click="add_hfdrug(newdrug)"><i class="fa fa-arrow-down"></i> Add</button>
+                                                                            <button class="btn btn-danger input-sm" ng-click="edit_drug(newdrug)"><i class="fa fa-floppy-o"></i> Update</button>
                                                                         </td>
                                                                     </tr>
-                                                                    </tbody>
+                                                                    </tbody>`
                                                                     <tbody ng-repeat="(drung_order,drug) in hf_drugs">
                                                                     <tr>
                                                                         <td>{{drung_order+1}}</td>
