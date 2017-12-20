@@ -141,7 +141,7 @@ $scope.add_hfdrug = function(drug){
     }
     $http.post('/hfdrugs/list',_params).then(function(rs){
         if(rs.data.responseCode == 0 && rs.data.docs.length > 0){
-            toaster.pop('error', "Error ", "Drug is existed on this HF, please choose another one!", 5000);
+            toaster.pop('error', "Error ", "Drug was existed on this HF, please choose another one!", 5000);
         }else{
             var tmp_hfdrug = {
                 data : {
@@ -181,8 +181,6 @@ $scope.edit_drug = function (drug) {
             }
         }
     }
-    console.log('--params--');
-    console.log(_params);
     if ((drug.drug_push && drug.drug_push.selected ? drug.drug_push.selected.drug_code : '') == '') {
         toaster.pop('error', "Error ", "You do not choose drug ! Please choose drug !", 5000);
     }else {
@@ -252,6 +250,36 @@ $scope.edit_hf = function (hf_selected) {
             toaster.pop('success', "Success ", hf_selected.name+" have successfully updated!", 5000);
             $scope.get_hfdetail();
             ModalControl.closeModal('HFcreate');
+        }
+    })
+    console.log('HF SELECTED DETAIL');
+    console.log(hf_selected);
+    var _param = {
+        "params": {
+            "$eq": {
+                "hf_id": hf_selected._id
+            }
+        }
+    }
+    $http.post('/hfdrugs/list', _param).then(function(rs){
+        $scope.hf_drugs_detail = rs.data.docs;
+        console.log('HF DRUGS DETAIL');
+        console.log($scope.hf_drugs_detail);
+        var tmp_hfdrugs = {
+            data : {
+                hf_detail: $scope.hf_selected
+            }
+        }
+        console.log(tmp_hfdrugs);
+        if ($scope.hf_drugs_detail.length >0) {
+            $scope.hf_drugs_detail.forEach(function (hf_drug_detail) {
+                console.log(hf_drug_detail)
+                $http.put('/hfdrugs/'+hf_drug_detail._id, tmp_hfdrugs).then(function(rs){
+                    if(rs.data.responseCode == 0){
+                        toaster.pop('success', "Success ", "Drug information of" +hf_drug_detail.hf_detail.name+" have successfully updated!", 5000);
+                    }
+                })
+            })
         }
     })
 }

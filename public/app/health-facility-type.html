@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><section id="content">
+        <section class="vbox">
+            <section class="scrollable padder">
+                <ul class="breadcrumb no-border no-radius b-b b-light pull-in">
+                    <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                    <li class="active">
+                        The Health Facilities manage
+                    </li>
+                </ul>
+                <div class="col-md-12" style="padding-left:5px;">
+                    <div class="pull-right">
+                        <button class="btn btn-primary" ng-click="open_newHF()"> <i class="fa fa-plus"></i> New The Health Facilities</button>
+                        <button  class="btn btn-success" data-toggle="modal" data-show="true" data-target="#createHFCategory">  <i class="fa fa-folder-o"></i> New The Health Facilities category</button>
+                    </div>
+                    <br />
+                    <br />
+                    <section>
+
+
+
+
+                        <div class="table-responsive">
+                            <table class="table table-striped b-t b-light" style="width:100%;">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>The HF name</th>
+                                    <th>The HF  category</th>
+                                    <th style="width:30%">The HF description</th>
+                                    <th>Add/Update</th>
+                                    <th class="text-center">Active</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="(hf_order,hf) in list_hf_type">
+                                    <td>{{hf_order+1}}</td>
+                                    <td>{{hf.hf_name}}</td>
+                                    <td>{{hf.hf_category_name}}</td>
+                                    <td>{{hf.hf_description}}</td>
+                                    <td><span class="label label-info">{{hf.createdAt | date:'HH:mm:ss dd/MM/yyyy'}}</span>/
+                                        <span class="label label-info">{{hf.updatedAt |date:'HH:mm:ss dd/MM/yyyy'}}</span></td>
+                                    <td class="text-center">
+                                        <i class="fa fa-check-circle" aria-hidden="true" ng-if="hf.hf_status == 1" style="color:#65bd77"></i>
+                                    </td>
+                                    <td class="h5 text-danger">
+                                        <a href="#" class="btn btn-xs btn-warning" ng-click="open_edit(hf)"><i class="fa fa-edit"></i> Edit</a>
+                                        <a href="#" ng-click="deleteHF(hf)" class="btn btn-xs btn-danger"><i class="fa fa-times"></i> Del</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </section>
+                </div>
+            </section>
+        </section>
+    </section>
+
+        <!-- Modal -->
+        <div class="modal fade" id="createHFType" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">
+                            <span ng-if="!tmp_hf.is_edit">New The HF</span>
+                            <span ng-if="tmp_hf.is_edit">Edit {{tmp_hf.hf_name}}</span>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12" style="overflow:auto">
+                                <form name="add_hf">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-8">
+                                                <span class="form_required">(*)</span> The HF Name:
+                                                <span class="form_required" ng-if="add_hf.name.$invalid">Required</span>
+                                                <input class="form-control" name="name" type="text" ng-model="tmp_hf.hf_name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        The HF Category: [<a href="#" data-dismiss="modal" data-toggle="modal" data-show="true" data-target="#createHFCategory">Add new</a>]
+
+                                        <ui-select ng-model="tmp_hf.hf_category.selected" theme="selectize" title="Choose a category">
+                                            <ui-select-match placeholder="Select or search a drug category...">{{$select.selected.cat_name}}</ui-select-match>
+                                            <ui-select-choices repeat="cat in list_hf_categories | filter: $select.search">
+                                                <span ng-bind-html="cat.cat_name | highlight: $select.search"></span>
+                                            </ui-select-choices>
+                                        </ui-select>
+
+                                    </div>
+                                    <div class="form-group">
+                                        The HF Description:
+                                        <textarea class="form-control" ng-model="tmp_hf.hf_description"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        Status:
+                                        <!-- Rectangular switch -->
+                                        <label><input type="radio" ng-value="1" ng-model="tmp_hf.hf_status" name="hf_status" > Active</label>
+                                        <label><input type="radio" value="0" ng-model="tmp_hf.hf_status" name="hf_status"> Deactive</label>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" ng-class="{'disabled': add_hf.$invalid}" ng-click="createNewHFType(tmp_hf);" name="change" class="btn btn-danger btn-s-xs" ng-if="!tmp_hf.is_edit"><i class="fa fa-floppy-o"></i> Save</button>
+                        <button type="submit" ng-class="{'disabled': add_hf.$invalid}" ng-click="save_hf_edit(tmp_hf);" name="change" class="btn btn-danger btn-s-xs" ng-if="tmp_hf.is_edit"><i class="fa fa-floppy-o"></i> Update</button>
+                        <button class="btn btn-primary" data-toggle="modal" data-show="true" data-dismiss="modal" data-target="#createHFCategory"> <i class="fa fa-folder-o"></i> New The HF Category</button>
+
+                        <button type="button" data-dismiss="modal" class="btn btn-default btn-s-xs"><i class="fa fa-times"></i> Close</button>
+
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="createHFCategory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">The HF Category</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped b-t b-light" style="width:100%;">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:5%">#</th>
+                                                <th style="width:60%">The HF category name</th>
+                                                <th style="width:20%" class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <input type="text" class="form-control input-sm" ng-model="hf_category_name">
+                                                </td>
+
+                                                <td  class="text-center">
+                                                    <button class="btn btn-sm btn-primary" ng-click="add_HFcat(hf_category_name)"><i class="fa fa-arrow-down"></i> Add</button>
+                                                </td>
+                                            </tr>
+                                            <tr ng-repeat="(hf_order,hf) in list_hf_categories">
+                                                <td>{{hf_order+1}}</td>
+                                                <td>{{hf.cat_name}}</td>
+                                                <td class="text-center">
+                                                    <a href="#" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Edit</a>
+                                                    <a href="#" class="btn btn-xs btn-danger" ng-click="deleteHFCat(hf)"><i class="fa fa-times"></i> Del</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-toggle="modal" data-show="true" data-dismiss="modal" data-target="#createDrug"> <i class="fa fa-file-o"></i> Create New The HF</button>
+
+                        <button type="button" data-dismiss="modal" class="btn btn-default btn-s-xs"><i class="fa fa-times"></i>  Close</button>
+
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal --></title>
+</head>
+<body>
+
+</body>
+</html>

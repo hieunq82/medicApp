@@ -57,6 +57,8 @@
                                                             <div class="pull-left">
                                                                 <a class="btn btn-primary text-success btn_getmail" style="margin-top:-8px;" data-toggle="modal" data-show="true" href="#" data-target="#loadMailget">
                                                                     <i class="fa fa-plus"></i>  Send message <i class="fa fa-envelope-o"></i></a>
+                                                                <a class="btn btn-primary text-success btn_getmail" style="margin-top:-8px;" ng-click="open_newhf()">
+                                                                    <i class="fa fa-plus"></i>  New Place/Facility <i class="fa fa-hospital-o"></i></a>
                                                             </div>
 
                                                             <div class="pull-right"><div class="dropdown">
@@ -142,20 +144,14 @@
                  <div class="row">
                      <div class="col-sm-10">
                          <div class="form-group" ng-model="detail_contact.selected">
-                             <!--Send to: <input class="form-control" name="to" id="to" placeholder="+84987654321" data-toggle="popover" type="text" ng-model="msg.to">-->
-                             <label>Select phone number:</label><br/>
+                             <label>Phone number:</label><br/>
                              <ui-select multiple ng-model="msg.to" title="Select phone number" style="width: 100%;">
                                  <ui-select-match  placeholder="Select phone number..." style="width: 100%;">{{$item.name}}</ui-select-match>
                                  <ui-select-choices repeat="rp_center in detail_contact | filter: $select.search">
                                      <span ng-bind-html="rp_center.name | highlight: $select.search"></span>
                                  </ui-select-choices>
                              </ui-select>
-                             <!--<ui-select  multiple  ng-model="msg.to" theme="select2" append-to-body="true" title="Select phone number">-->
-                                 <!--<ui-select-match placeholder="Select phone number...">{{$item.name}}</ui-select-match>-->
-                                 <!--<ui-select-choices repeat="rp_center in detail_contact">-->
-                                    <!--<label ng-bind-html="rp_center.name | highlight: $select.search"></label>-->
-                                 <!--</ui-select-choices>-->
-                             <!--</ui-select>-->
+
                          </div>
                          <div class="form-group">
                              Message: <input class="form-control" name="msg.content" ng-model="msg.content" type="text" placeholder="Hello">
@@ -175,9 +171,81 @@
      <!-- /.modal-dialog -->
  </div>
  <!-- /.modal -->
- <!--<ui-select  multiple  ng-model="select_icd.selected" theme="select2" style="width: 100%;"  ng-focus="focused()" focus-on='ftSelected_Icd' on-select="check_icd($item)" on-remove="remove_icd($item, $model)" id="ftSelected_Icd" ng-required="{required:select_icd.selected.length === 0 && resolution == 1}" append-to-body="true">-->
-     <!--<ui-select-match placeholder="{{'lb_Khambenh_ChonmaICD'  | translate}}">{{$item.service_code}}</ui-select-match>-->
-     <!--<ui-select-choices repeat="icd in dm_icd" refresh="search_icd($select.search)">-->
-         <!--<label ng-bind-html="icd.service_code | highlight: $select.search"></label> - <label ng-bind-html="icd.service_name | highlight: $select.search"></label>-->
-     <!--</ui-select-choices>-->
- <!--</ui-select>-->
+
+ <!-- Modal -->
+ <div class="modal fade" id="HFcreate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+     <div class="modal-dialog">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                 <h4 class="modal-title">
+                     <span ng-if="!hf.is_edit">New Place/Health facility</span>
+                 </h4>
+             </div>
+             <div class="modal-body">
+
+                 <form name="myForm"></form>
+
+                 <div class="row">
+                     <div class="col-sm-12" style="height:450px;overflow:auto">
+                         <form name="new_hf">
+                             <div class="form-group">
+                                 <span class="form_required">(*)</span> Name of HF:
+                                 <span class="form_required" ng-if="new_hf.myname.$invalid">Required</span>
+                                 <input class="form-control" name="myname" type="text" ng-model="hf.name" required>
+                             </div>
+                             <div class="form-group">
+                                 <span class="form_required">(*)</span> Phone number:
+                                 <span class="form_required" ng-if="new_hf.myphone.$invalid">Required</span>
+
+                                 <input class="form-control" name="myphone" ng-model="hf.phone" type="text" required>
+                             </div>
+                             <div class="form-group">
+                                 VDC/Municipality name: <input class="form-control" name="phone" ng-model="hf.vdc" type="text" >
+                             </div>
+                             <!--<div class="form-group">-->
+                             <!--Address: <input class="form-control" name="address" ng-model="hf.address" type="text" >-->
+                             <!--</div>-->
+                             <div class="form-group">
+                                 Reporting Center:
+                                 <ui-select ng-model="hf.reporting_center_list.selected" theme="selectize" title="Choose report center">
+                                     <ui-select-match placeholder="Select or search a HF...">{{$select.selected.name}}</ui-select-match>
+                                     <ui-select-choices repeat="rp_center in list_hf | filter: $select.search">
+                                         <span ng-bind-html="rp_center.name | highlight: $select.search"></span>
+                                     </ui-select-choices>
+                                 </ui-select>
+
+                             </div>
+
+                             <div class="form-group">
+                                 Heath Facility notes:
+                                 <textarea class="form-control" name="type" ng-model="hf.notes" type="text" ></textarea>
+                             </div>
+                             <hr>
+                             <div class="form-group">
+                                 <span class="form_required">(*)</span> Contact Person:
+                                 <span class="form_required" ng-if="new_hf.person.$invalid">Required</span>
+                                 <input class="form-control" name="person" ng-model="hf.person" type="text" required>
+                             </div>
+                             <div class="form-group">
+                                 <span class="form_required">(*)</span> <strong>Contact Person's Mobile: (eg: +84987777890)</strong>
+                                 <span class="form_required" ng-if="new_hf.person_mobile.$invalid">Required</span>
+
+                                 <input class="form-control" name="person_mobile" ng-model="hf.person_mobile" type="text" required>
+                             </div>
+                         </form>
+                     </div>
+                 </div>
+
+             </div>
+             <div class="modal-footer">
+                 <button type="submit" ng-click="createNewHF(hf);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
+                 <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-times"></i> Close</button>
+
+             </div>
+         </div>
+         <!-- /.modal-content -->
+     </div>
+     <!-- /.modal-dialog -->
+ </div>
+ <!-- /.modal -->

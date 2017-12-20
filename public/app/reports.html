@@ -10,8 +10,6 @@
             <div class="col-md-12" style="padding-left:5px;">
 
                 <section>
-
-
                     <div class="main_section" style="width:100%">
                         <div class="container" style="width:100%;padding-left:0px;">
                             <div class="chat_container">
@@ -60,12 +58,26 @@
                                             <section class="panel panel-default">
                                                 <header class="panel-heading">
                                                     <span class="h4">
-                                                        <i class="fa fa-phone-square" aria-hidden="true"></i>  {{detail_messages.from}}<br />
+                                                        <i class="fa fa-phone-square" aria-hidden="true"></i>{{detail_messages.name}}<br />
+                                                        <span style="margin-top: -17px;font-size: 10pt;color: #716d6d;">
+                                                         Phone number: {{detail_messages.from}}
+                                                        </span><br>
+                                                        <span style="margin-top: -17px;font-size: 8pt;color: #716d6d;">
+                                                         Received {{momentjs(detail_messages.createdAt).format('HH:mm:ss MM-DD-YYYY')}}
+                                                        </span>
                                                     </span>
 
-                                                    <span style="float: right;margin-top: -17px;font-size: 8pt;color: #716d6d;">
-                                                        Received {{momentjs(detail_messages.createdAt).format('HH:mm:ss MM-DD-YYYY')}}
-                                                    </span>
+
+                                                    <div class="pull-right" ng-if="detail_messages"><div class="dropdown">
+                                                        <button class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-cogs" aria-hidden="true"></i>  Action
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                            <li><a href="#" ng-click="open_updateHF(detail_messages)">Edit drug</a></li>
+                                                            <li><a href="#" ng-click="open_newHF(detail_messages)">Create drug</a></li>
+                                                        </ul>
+                                                    </div></div>
                                                 </header><br>
                                                 <div class="row">
                                                     <div class="col-sm-12">
@@ -78,7 +90,6 @@
                                                                 <p class="list-group-item-text">
                                                                     Drug code: {{detail_messages.raw_msg[1]}} - Quantity: {{detail_messages.raw_msg[2]}}
                                                                 </p>
-
                                                             </li>
 
                                                             <li class="list-group-item">
@@ -93,22 +104,6 @@
 
                                                             </li>
                                                             <li class="list-group-item">
-                                                                <!--<h4 class="list-group-item-heading">-->
-                                                                    <!--<i class="fa fa-paper-plane" aria-hidden="true"></i>-->
-                                                                    <!--Automated reply-->
-                                                                <!--</h4>-->
-                                                                <!--<p class="list-group-item-text">-->
-                                                                <!--<div class="sms_send_body">-->
-                                                                    <!--{{detail_messages.auto_message[0].content}}-->
-                                                                    <!--<br />-->
-                                                                    <!--<span>-->
-                                                                        <!--<i class="fa fa-circle status_{{detail_messages.auto_message[0].state}}" aria-hidden="true"></i>-->
-                                                                    <!--{{detail_messages.auto_message[0].state}} to {{detail_messages.from}}-->
-                                                                    <!--</span>-->
-                                                                <!--</div>-->
-                                                                <!--</p>-->
-
-                                                                <!--<br />-->
                                                                 <div ng-if="detail_messages.tasks.length > 0">
                                                                     <h4 class="list-group-item-heading">
                                                                         <i class="fa fa-history" aria-hidden="true"></i>
@@ -134,24 +129,15 @@
                                                                     </ul>
                                                                     </p>
                                                                 </div>
-
-
-
-
                                                             </li>
                                                             <!--<li class="list-group-item">-->
                                                                 <!--TEST-->
                                                             <!--</li>-->
                                                         </ul>
-
-
                                                         <!--{{detail_messages}}-->
                                                     </div>
                                                 </div>
                                             </section>
-
-
-
                                     </div>
                                 </div> <!--message_section-->
                             </div>
@@ -169,30 +155,65 @@
 </section>
 
 <!-- Modal -->
-<div class="modal fade" id="loadMailget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="HFupdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Send message</h4>
+                <h4 class="modal-title">
+                    <span ng-if="!hf_drug.is_edit">Create New Drug</span>
+                    <span ng-if="hf_drug.is_edit">Update {{hf_drug.name}}</span>
+                </h4>
             </div>
             <div class="modal-body">
 
-                <div class="row">
-                    <div class="col-sm-10">
-                        <div class="form-group">
-                            Send to: <input class="form-control" name="to" id="to" placeholder="+84987654321" data-toggle="popover" type="text" ng-model="msg.to">
-                        </div>
-                        <div class="form-group">
-                            Message: <input class="form-control" name="msg.content" ng-model="msg.content" type="text" placeholder="Hello">
-                        </div>
+                <form name="myForm"></form>
 
+                <div class="row">
+                    <div class="col-sm-12" style="height:410px;overflow:auto">
+                        <form name="new_hf">
+                            <div class="form-group">
+                                <span class="form_required">(*)</span> Name of HF:
+                                <span class="form_required" ng-if="new_hf.myname.$invalid">Required</span>
+                                <input class="form-control" name="myname" type="text" ng-model="hf_drug.name" required>
+                            </div>
+                            <div class="form-group">
+                                <span class="form_required">(*)</span> Phone number:
+                                <span class="form_required" ng-if="new_hf.myphone.$invalid">Required</span>
+                                <input class="form-control" name="myphone" ng-model="hf_drug.from" type="text" required placeholder="+849876543210">
+                            </div>
+                            <div class="form-group">
+                                <span class="form_required">(*)</span> Drug Code:
+                                <input class="form-control" name="phone" ng-model="hf_drug.drug_code" type="text" >
+                                <!--<ui-select ng-if="!hf_drug.is_edit" ng-model="list_drug.selected" theme="selectize" title="Choose report center">-->
+                                    <!--<ui-select-match placeholder="Select drug code...">{{$select.selected.drug_code}}</ui-select-match>-->
+                                    <!--<ui-select-choices repeat="rp_center in list_drug | filter: $select.search">-->
+                                        <!--<span ng-bind-html="rp_center.drug_code | highlight: $select.search"></span>-->
+                                    <!--</ui-select-choices>-->
+                                <!--</ui-select>-->
+                            </div>
+                            <div class="form-group">
+                                <span class="form_required">(*)</span>  Drug Quanity (ABS):
+                                <input class="form-control" name="address" ng-model="hf_drug.drug_abs" type="text" >
+                            </div>
+                            <div class="form-group" ng-if="!hf_drug.is_edit">
+                                <span class="form_required">(*)</span> Emergency order point (EOP):
+                                <input class="form-control" name="address" ng-model="hf_drug.drug_eop" type="text" >
+                            </div>
+                            <div class="form-group" ng-if="!hf_drug.is_edit">
+                                <span class="form_required">(*)</span> Authorized stock level (ASL):
+                                <input class="form-control" name="address" ng-model="hf_drug.drug_asl" type="text" >
+                            </div>
+
+                        </form>
                     </div>
                 </div>
+
             </div>
             <div class="modal-footer">
-                <button type="submit" ng-click="sendMsg(msg);" name="change" class="btn btn-success btn-s-xs">Send Message</button>
-                <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-chevron-left"></i> Back</button>
+                <button type="submit" ng-click="createNewHFdrug(hf_drug);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf_drug.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
+                <button type="submit" ng-click="update_drug(hf_drug);" name="change" class="btn btn-danger btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="hf_drug.is_edit"><i class="fa fa-floppy-o"></i>  Update</button>
+                <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-times"></i> Close</button>
 
             </div>
         </div>

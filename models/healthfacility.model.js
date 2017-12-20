@@ -14,7 +14,7 @@ module.exports = function(mongoose){
     "person_mobile": {type: String},
     "vdc": {type: String},
     "active": {type: Boolean},
-    "notes": {type: Boolean}
+    "notes": {type: String}
 }, {
     "timestamps": true,
     "createdby": true,

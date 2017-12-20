@@ -2,6 +2,54 @@ angular.module('drugmonApp').controller('MessagesCtrl', function ($scope, $http)
     $scope.list_mesages = [];
     $scope.msg = {};
     $scope.momentjs = moment;
+
+    $scope.findHFbyFilter = function(filter){
+        if(filter == 'hp') filter = 'hf'
+        else if(filter == 'hf') filter = 'dt'
+        var f_data = {
+            "params": {"$eq": {"place_type": filter}}
+        }
+        return (
+            $http.post('/healthfacility/list', f_data)
+        )
+    }
+    $scope.get_hfdetail = function(){
+        $http.post('/healthfacility/list', {}).then(function(rs){
+            $scope.list_hf = rs.data.docs;
+        }, function(){
+            console.log('Error!');
+        })
+        // //Todo: Get drugs
+        $http.post('/drugs/list', {}).then(function(rs){
+            $scope.list_drug = [];
+            $scope.list_drug = rs.data.docs;
+        }, function(){
+            console.log('Error!');
+        })
+
+    }
+
+    //Todo: Preload
+    $scope.get_hfdetail();
+
+    $scope.set_active_place = function(type){
+        $scope.hf.place_type = type;
+        // $scope.hf.reporting_center_list = $scope.findHFbyFilter(type);
+
+        $timeout(function(){
+            var promise = $scope.findHFbyFilter(type);
+
+            promise.then( function(result) {
+                $scope.hf.reporting_center_list = result.data.docs;
+            }).catch ( function(result) {
+                $scope.hf.reporting_center_list = []
+            });
+        },100)
+
+
+
+        console.log($scope.hf);
+    }
     var x_req = {
         "params": {
             "$sort": [
@@ -96,4 +144,9 @@ angular.module('drugmonApp').controller('MessagesCtrl', function ($scope, $http)
         });
     }
 
+    $scope.open_newHF = function(detail_messages){
+        $('#HFupdate').modal('show');
+        $scope.hf_drug = {};
+        $scope.hf_drug.is_edit = false;
+    }
 });
