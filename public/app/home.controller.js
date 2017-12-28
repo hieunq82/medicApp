@@ -251,9 +251,6 @@ angular.module('drugmonApp').controller('RegisterDrugCtrl', function($scope,$roo
                             $scope.get_drug_history(drug._id);
                         }
                     })
-
-
-
                 }
             })
         })

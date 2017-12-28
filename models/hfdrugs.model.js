@@ -22,15 +22,14 @@ module.exports = function(mongoose){
                 "person":{type: String},
                 "person_mobile":{type: String},
                 "phone":{type: String},
-                "reporting_center":{type: String},
                 "type":{type: String},
                 "vdc":{type: String},
-                "reporting_center": {
+                "reporting_center": [{
                     "_id": {type: String},
                     "name": {type: String},
                     "person": {type: String},
                     "person_mobile": {type: String},
-                }
+                }]
             }
 
         } , {

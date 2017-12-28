@@ -11,6 +11,8 @@
 
                 <section>
                     <div class="main_section" style="width:100%">
+                        <div ng-if="list_register.loader" class="re-loader show"></div>
+                        <div ng-if="!list_register.loader" class="re-loader hide"></div>
                         <div class="container" style="width:100%;padding-left:0px;">
                             <div class="chat_container">
                                 <div class="col-sm-3 chat_sidebar">
@@ -48,8 +50,6 @@
                                         </div></div>
                                 </div>
                                 <!--chat_sidebar-->
-
-
                                 <div class="col-sm-9 message_section">
                                     <div class="row" ng-if="detail_messages">
 
@@ -184,13 +184,13 @@
                             </div>
                             <div class="form-group">
                                 <span class="form_required">(*)</span> Drug Code:
-                                <input class="form-control" name="phone" ng-model="hf_drug.drug_code" type="text" >
-                                <!--<ui-select ng-if="!hf_drug.is_edit" ng-model="list_drug.selected" theme="selectize" title="Choose report center">-->
-                                    <!--<ui-select-match placeholder="Select drug code...">{{$select.selected.drug_code}}</ui-select-match>-->
-                                    <!--<ui-select-choices repeat="rp_center in list_drug | filter: $select.search">-->
-                                        <!--<span ng-bind-html="rp_center.drug_code | highlight: $select.search"></span>-->
-                                    <!--</ui-select-choices>-->
-                                <!--</ui-select>-->
+                                <input ng-if="hf_drug.is_edit" class="form-control" name="phone" ng-model="hf_drug.drug_code" type="text" >
+                                <ui-select ng-if="!hf_drug.is_edit" ng-model="list_drug.selected" theme="selectize" title="Choose report center">
+                                    <ui-select-match placeholder="Select drug code...">{{$select.selected.drug_code}}</ui-select-match>
+                                    <ui-select-choices repeat="rp_center in list_drug | filter: $select.search">
+                                        <span ng-bind-html="rp_center.drug_code | highlight: $select.search"></span>
+                                    </ui-select-choices>
+                                </ui-select>
                             </div>
                             <div class="form-group">
                                 <span class="form_required">(*)</span>  Drug Quanity (ABS):
@@ -211,7 +211,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="submit" ng-click="createNewHFdrug(hf_drug);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf_drug.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
+                <button type="submit" ng-click="createNewHFdrug(hf_drug, list_drug);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf_drug.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
                 <button type="submit" ng-click="update_drug(hf_drug);" name="change" class="btn btn-danger btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="hf_drug.is_edit"><i class="fa fa-floppy-o"></i>  Update</button>
                 <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-times"></i> Close</button>
 

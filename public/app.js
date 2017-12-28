@@ -38,7 +38,7 @@ angular.module('drugmonApp', [
         controller: 'DrugsCtrl'
     }).state('healthfacilitytype', {
         url: '/health-facility-type.html',
-        templateUrl: 'app/health-facility-type.html',
+        templateUrl: 'app/health_facility_type.html',
         controller: 'HFTypeCtrl'
     }).state('userregister', {
         url: '/register-drugs.html',
@@ -85,6 +85,7 @@ angular.module('drugmonApp', [
         }
     }
 })
+
 .config(['ngDialogProvider', function (ngDialogProvider) {
     ngDialogProvider.setDefaults({
         className: 'ngdialog-theme-plain',
@@ -120,4 +121,5 @@ angular.module('drugmonApp', [
         return confirm_sl;
     };
 });
+
 

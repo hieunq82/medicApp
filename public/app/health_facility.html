@@ -99,7 +99,7 @@
 
                                                     <div class="form-group">
                                                         Reporting center:
-                                                        <button ng-if="hf_selected.reporting_center" class="btn btn-danger btn-sm" ng-click="choose_hf(hf_selected.reporting_center)">{{hf_selected.reporting_center.name}}</button>
+                                                        <button ng-if="hf_selected.reporting_center.length > 0" style="margin-right: 5px;" ng-repeat="report in hf_selected.reporting_center" class="btn btn-danger btn-sm" ng-click="choose_hf(report)">{{report.name}}</button>
                                                     </div>
                                                         <div class="form-group">
                                                             Notes:
@@ -260,7 +260,24 @@
     </section>
 </section>
 
-
+<style>
+    .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+        width: 100% !important;
+    }
+    .ui-select-multiple.ui-select-bootstrap input.ui-select-search:after {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        display: block;
+        width: 0;
+        height: 0;
+        margin-top: -3px;
+        border-color: #808080 transparent transparent transparent;
+        border-style: solid;
+        border-width: 5px 5px 0 5px;
+        content: ' ';
+    }
+</style>
 <!-- Modal -->
 <div class="modal fade" id="HFcreate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -290,21 +307,29 @@
 
                             <input class="form-control" name="myphone" ng-model="hf.phone" type="text" required>
                         </div>
-                        <div class="form-group">
-                            VDC/Municipality name: <input class="form-control" name="phone" ng-model="hf.vdc" type="text" >
+                        <div class="form-group" >
+                            <span class="form_required">(*)</span> HF Type:
+                            <ui-select ng-model="hf_type.selected"  theme="selectize" title="Choose report center">
+                                <ui-select-match placeholder="Select or search a HF type...">{{$select.selected.hf_type_name}}</ui-select-match>
+                                <ui-select-choices repeat="rp_center in hf_type | filter: $select.search">
+                                    <span ng-bind-html="rp_center.hf_type_name | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
                         </div>
-                        <!--<div class="form-group">-->
-                            <!--Address: <input class="form-control" name="address" ng-model="hf.address" type="text" >-->
-                        <!--</div>-->
+                        <div class="form-group">
+                            VDC/Municipality name: <input class="form-control" name="VDC/Municipality name" ng-model="hf.vdc" type="text" >
+                        </div>
+                        <div class="form-group">
+                            Address: <input class="form-control" name="address" ng-model="hf.address" type="text" >
+                        </div>
                         <div class="form-group">
                             Reporting Center:
-                            <ui-select ng-model="hf.reporting_center_list.selected" theme="selectize" title="Choose report center">
-                                <ui-select-match placeholder="Select or search a HF...">{{$select.selected.name}}</ui-select-match>
+                            <ui-select multiple ng-model="hf.reporting_center_list.selected" title="Choose report center">
+                                <ui-select-match placeholder="Select or search a HF...">{{$item.name}}</ui-select-match>
                                 <ui-select-choices repeat="rp_center in list_hf | filter: $select.search">
                                     <span ng-bind-html="rp_center.name | highlight: $select.search"></span>
                                 </ui-select-choices>
                             </ui-select>
-
                         </div>
 
                         <div class="form-group">
@@ -315,7 +340,7 @@
                         <div class="form-group">
                             <span class="form_required">(*)</span> Contact Person:
                             <span class="form_required" ng-if="new_hf.person.$invalid">Required</span>
-<input class="form-control" name="person" ng-model="hf.person" type="text" required>
+                            <input class="form-control" name="person" ng-model="hf.person" type="text" required>
                         </div>
                         <div class="form-group">
                             <span class="form_required">(*)</span> <strong>Contact Person's Mobile: (eg: +84987777890)</strong>
@@ -329,8 +354,8 @@
 
             </div>
             <div class="modal-footer">
-                <button type="submit" ng-click="createNewHF(hf);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
-                <button type="submit" ng-click="edit_hf(hf);" name="change" class="btn btn-danger btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="hf.is_edit"><i class="fa fa-floppy-o"></i>  Update</button>
+                <button type="submit" ng-click="createNewHF(hf, hf_type);" name="change" class="btn btn-success btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="!hf.is_edit"><i class="fa fa-floppy-o"></i> Create</button>
+                <button type="submit" ng-click="edit_hf(hf, hf_type);" name="change" class="btn btn-danger btn-s-xs" ng-class="{'disabled':new_hf.$invalid}" ng-if="hf.is_edit"><i class="fa fa-floppy-o"></i>  Update</button>
                 <button type="button" data-dismiss="modal" class="btn btn-info btn-s-xs"><i class="fa fa-times"></i> Close</button>
 
             </div>

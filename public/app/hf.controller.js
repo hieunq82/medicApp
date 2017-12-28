@@ -35,6 +35,12 @@ $scope.get_hfdetail = function(){
 
 }
 
+     //Todo: Get HF Type
+    $http.post('/healthfacilities_type/list', {}).then(function(rs){
+        $scope.hf_type = rs.data.docs;
+    }, function(){
+        console.log('Error!');
+    })
 //Todo: Preload
 $scope.get_hfdetail();
 
@@ -66,6 +72,8 @@ $scope.get_hfdetail();
 $scope.hf_selected = undefined;
 $scope.choose_hf = function (hf) {
     $scope.hf_selected = hf;
+    console.log('HF SELECT');
+    console.log($scope.hf_selected);
     $scope.get_hfdrugs(hf._id);
 }
 
@@ -106,20 +114,36 @@ $scope.choose_hf = function (hf) {
         })
     }
 
-$scope.createNewHF = function(hf){
+$scope.createNewHF = function(hf, hf_type){
         if(hf.reporting_center_list && hf.reporting_center_list.selected){
-            hf.reporting_center = {
-                "_id": hf.reporting_center_list.selected._id,
-                "name": hf.reporting_center_list.selected.name,
-                "person": hf.reporting_center_list.selected.person,
-                "person_mobile": hf.reporting_center_list.selected.person_mobile
-            }
-            // hf.reporting_center_list = undefined;
+            hf.reporting_center = [];
+            var _report = hf.reporting_center_list.selected;
+            _report.forEach(function (report) {
+                hf.reporting_center.push ({
+                    "_id": report._id,
+                    "name": report.name,
+                    "person": report.person,
+                    "person_mobile": report.person_mobile
+                })
+            })
         }
     hf.is_edit = undefined;
 
     var _xdata = {
-        "data": hf
+        "data": {
+            "updatedAt" : new Date(),
+            "createdAt" :  new Date() ,
+            "place_type" : hf.place_type,
+            "name" : hf.name,
+            "type" : hf_type.selected.hf_type_name,
+            "phone" : hf.phone,
+            "vdc" : hf.vdc,
+            "address" : hf.address,
+            "notes" : hf.notes,
+            "person_mobile" : hf.person_mobile,
+            "person" : hf.person,
+            "reporting_center" :  hf.reporting_center,
+        }
     };
     $http.post('/healthfacility', _xdata).then(function(rs){
         if(rs.data.responseCode == 0){
@@ -139,24 +163,37 @@ $scope.add_hfdrug = function(drug){
             }
         }
     }
+
     $http.post('/hfdrugs/list',_params).then(function(rs){
         if(rs.data.responseCode == 0 && rs.data.docs.length > 0){
             toaster.pop('error', "Error ", "Drug was existed on this HF, please choose another one!", 5000);
         }else{
             var tmp_hfdrug = {
-                data : {
-                    hf_name: $scope.hf_selected.hf_name,
-                    hf_id: $scope.hf_selected._id,
-                    drug_name: drug.drug_push.selected.drug_name,
-                    drug_code: drug.drug_push.selected.drug_code,
-                    drug_description: drug.drug_push.selected.drug_description,
-                    drug_id: drug.drug_push.selected._id,
-                    drug_asl: parseInt(drug.drug_asl),
-                    drug_eop: parseInt(drug.drug_eop),
-                    drug_abs: parseInt(drug.drug_abs),
-                    hf_detail: $scope.hf_selected
+                "data" : {
+                    "hf_name": $scope.hf_selected.name,
+                    "hf_id": $scope.hf_selected._id,
+                    "drug_name": drug.drug_push.selected.drug_name,
+                    "drug_code": drug.drug_push.selected.drug_code,
+                    "drug_description": drug.drug_push.selected.drug_description,
+                    "drug_id": drug.drug_push.selected._id,
+                    "drug_asl": parseInt(drug.drug_asl),
+                    "drug_eop": parseInt(drug.drug_eop),
+                    "drug_abs": parseInt(drug.drug_abs),
+                    "hf_detail": {
+                        "address":  $scope.hf_selected.address,
+                        "name": $scope.hf_selected.name,
+                        "notes": $scope.hf_selected.notes,
+                        "person": $scope.hf_selected.person,
+                        "person_mobile": $scope.hf_selected.person_mobile,
+                        "phone": $scope.hf_selected.phone,
+                        "type": $scope.hf_selected.type,
+                        "vdc": $scope.hf_selected.vdc,
+                        "reporting_center": $scope.hf_selected.reporting_center,
+                    }
                 }
             }
+            console.log('tmp_hfdrug');
+            console.log(tmp_hfdrug);
             $http.post('/hfdrugs', tmp_hfdrug).then(function(rs){
                 $scope.newdrug = {};
                 $scope.hf_drugs.push(tmp_hfdrug.data);
@@ -231,19 +268,31 @@ $scope.remove_drug = function (drug) {
     })
 }
 
-$scope.edit_hf = function (hf_selected) {
+$scope.edit_hf = function (hf_selected, hf_type) {
     if(hf_selected.reporting_center_list && hf_selected.reporting_center_list.selected){
-        hf_selected.reporting_center = {
-            "_id": hf_selected.reporting_center_list.selected._id,
-            "name": hf_selected.reporting_center_list.selected.name,
-            "person": hf_selected.reporting_center_list.selected.person,
-            "person_mobile": hf_selected.reporting_center_list.selected.person_mobile
-        }
-        // hf_selected.reporting_center_list = undefined;
+        $scope.reporting_center = hf_selected.reporting_center_list.selected;
     }
     hf_selected.is_edit = undefined;
+    if (hf_type.selected == undefined ){
+        $scope.type = hf_selected.type;
+    }else {
+        $scope.type =  hf_type.selected.hf_type_name;
+    }
     var _xdata = {
-        "data": hf_selected
+        "data": {
+            "updatedAt" : new Date(),
+            "createdAt" :  hf_selected.createdAt ,
+            "place_type" : hf_selected.place_type,
+            "name" : hf_selected.name,
+            "type" :  $scope.type,
+            "phone" : hf_selected.phone,
+            "vdc" : hf_selected.vdc,
+            "address" : hf_selected.address,
+            "notes" : hf_selected.notes,
+            "person_mobile" : hf_selected.person_mobile,
+            "person" : hf_selected.person,
+            "reporting_center" : $scope.reporting_center,
+        }
     };
     $http.put('/healthfacility/'+hf_selected._id, _xdata).then(function(rs){
         if(rs.data.responseCode == 0){
@@ -254,6 +303,72 @@ $scope.edit_hf = function (hf_selected) {
     })
     console.log('HF SELECTED DETAIL');
     console.log(hf_selected);
+    //After updating Reporting Center then update RC info to Health Post
+    $http.post('/healthfacility/list', {}).then(function(rs){
+          $scope.hf_detail_list = rs.data.docs;
+          $scope.hf_detail_list.forEach(function (hf_detail){
+                if (hf_detail.reporting_center) {
+                    hf_detail.reporting_center.forEach(function (hf, index) {
+                        if(hf._id == hf_selected._id){
+                            $scope.reporting_center = hf_detail.reporting_center;
+                            $scope.reporting_center[index] = hf;
+                            $scope.reporting_center[index].name = hf_selected.name;
+                            $scope.reporting_center[index].person = hf_selected.person;
+                            $scope.reporting_center[index].person_mobile = hf_selected.person_mobile;
+                            var _data = {
+                                "data": {
+                                    "reporting_center": $scope.reporting_center
+                                }
+                            }
+                            $http.put('/healthfacility/'+hf_detail._id, _data).then(function(rs){
+                                if(rs.data.responseCode == 0){
+                                    console.log('Updated HF successful!');
+                                }
+                            })
+
+                            console.log('reporting_center');
+                            console.log($scope.reporting_center);
+                            var _param = {
+                                "params": {
+                                    "$eq": {
+                                        "hf_id": hf_detail._id
+                                    }
+                                }
+                            }
+                            $http.post('/hfdrugs/list', _param).then(function(rs){
+                                $scope.hf_drugs_detail = rs.data.docs;
+                                var tmp_hfdrugs = {
+                                    "data" : {
+                                        "hf_detail" :{
+                                            "name" : hf_selected.name,
+                                            "type" : hf_selected.type,
+                                            "phone" : hf_selected.phone,
+                                            "vdc" : hf_selected.vdc,
+                                            "address" : hf_selected.address,
+                                            "notes" : hf_selected.notes,
+                                            "person_mobile" : hf_selected.person_mobile,
+                                            "person" : hf_selected.person,
+                                            "reporting_center": $scope.reporting_center
+                                        }
+                                    }
+                                }
+                                if ($scope.hf_drugs_detail.length >0) {
+                                    $scope.hf_drugs_detail.forEach(function (hf_drug_detail) {
+                                        console.log(hf_drug_detail)
+                                        $http.put('/hfdrugs/'+hf_drug_detail._id, tmp_hfdrugs).then(function(rs){
+                                            if(rs.data.responseCode == 0){
+                                                // toaster.pop('success', "Success ", "Drug information of" +hf_drug_detail.hf_detail.name+" have successfully updated!", 5000);
+                                                console.log('Drug information have successfully updated!');
+                                            }
+                                        })
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+          })
+    })
     var _param = {
         "params": {
             "$eq": {
@@ -263,20 +378,28 @@ $scope.edit_hf = function (hf_selected) {
     }
     $http.post('/hfdrugs/list', _param).then(function(rs){
         $scope.hf_drugs_detail = rs.data.docs;
-        console.log('HF DRUGS DETAIL');
-        console.log($scope.hf_drugs_detail);
         var tmp_hfdrugs = {
-            data : {
-                hf_detail: $scope.hf_selected
+            "data" : {
+                "hf_detail" :{
+                    "name" : hf_selected.name,
+                    "type" : hf_selected.type,
+                    "phone" : hf_selected.phone,
+                    "vdc" : hf_selected.vdc,
+                    "address" : hf_selected.address,
+                    "notes" : hf_selected.notes,
+                    "person_mobile" : hf_selected.person_mobile,
+                    "person" : hf_selected.person,
+                    "reporting_center": $scope.reporting_center
+                }
             }
         }
-        console.log(tmp_hfdrugs);
         if ($scope.hf_drugs_detail.length >0) {
             $scope.hf_drugs_detail.forEach(function (hf_drug_detail) {
                 console.log(hf_drug_detail)
                 $http.put('/hfdrugs/'+hf_drug_detail._id, tmp_hfdrugs).then(function(rs){
                     if(rs.data.responseCode == 0){
-                        toaster.pop('success', "Success ", "Drug information of" +hf_drug_detail.hf_detail.name+" have successfully updated!", 5000);
+                        // toaster.pop('success', "Success ", "Drug information of" +hf_drug_detail.hf_detail.name+" have successfully updated!", 5000);
+                        console.log('Drug information have successfully updated!');
                     }
                 })
             })
