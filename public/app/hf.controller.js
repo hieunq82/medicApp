@@ -68,14 +68,38 @@ $scope.get_hfdetail();
         })
     }
 
-//Todo: Selected HF detail
-$scope.hf_selected = undefined;
-$scope.choose_hf = function (hf) {
+    $scope.test = function (rp) {
+        $scope.testRP = rp;
+        console.log(rp)
+    }
+
+    //Todo: Selected HF detail
+    $scope.hf_selected = undefined;
+    $scope.choose_hf = function (hf) {
+    console.log('HF');
+    console.log(hf);
     $scope.hf_selected = hf;
     console.log('HF SELECT');
     console.log($scope.hf_selected);
     $scope.get_hfdrugs(hf._id);
-}
+    };
+    $scope.selected_hf = function (hf_select) {
+        console.log('hf_select');
+        console.log(hf_select);
+        var _xdata = {
+            "params": {
+                "$eq":{
+                    "_id":hf_select
+                }
+            }
+        };
+        $http.post('/healthfacility/list', _xdata).then(function(rs){
+            $scope.hf_selected = rs.data.docs[0];
+            console.log('HF SELECT');
+            console.log($scope.hf_selected);
+            $scope.get_hfdrugs($scope.hf_selected._id);
+        })
+    }
 
 
     $scope.set_active_place = function(type){
@@ -113,6 +137,7 @@ $scope.choose_hf = function (hf) {
             $scope.hf_drugs = [];
         })
     }
+
 
 $scope.createNewHF = function(hf, hf_type){
         if(hf.reporting_center_list && hf.reporting_center_list.selected){
@@ -227,6 +252,9 @@ $scope.edit_drug = function (drug) {
                 if (hf_detail.drug_code == drug.drug_push.selected.drug_code ){
                     ConfirmBox.confirm('WARNING !', 'Drug is existed on this HF ! Do you want to update '+drug.drug_push.selected.drug_code+' ?').then(function(){
                         $http.post('/hfdrugs/list',_params).then(function(rs){
+                            console.log('Drug Update');
+                            console.log(rs.data.docs[0]);
+                            $scope.drug_update_info = rs.data.docs[0];
                             if(rs.data.responseCode == 0 && rs.data.docs.length > 0){
                                 $scope.hf_drugs_detail = rs.data.docs[0];
                                 $scope.hf_drugs_id = $scope.hf_drugs_detail._id;
@@ -237,6 +265,7 @@ $scope.edit_drug = function (drug) {
                                         drug_abs: parseInt(drug.drug_abs),
                                     }
                                 }
+                                //Todo: update to hfdrugs table
                                 $http.put('/hfdrugs/' + $scope.hf_drugs_id, tmp_hfdrug).then(function(rs){
                                     if(rs.data.responseCode == 0){
                                         $scope.newdrug = {};
@@ -244,6 +273,38 @@ $scope.edit_drug = function (drug) {
                                         $scope.get_hfdrugs($scope.hf_selected._id);
                                         toaster.pop('success', "Success ", "Drug was updated to "+$scope.hf_selected.name, 5000);
                                     }
+
+                                    var _drug_histories = {
+                                        "data" : {
+                                            "updatedAt" : new Date(),
+                                            "createdAt" : new Date(),
+                                            "hf_name" : $scope.drug_update_info.hf_name,
+                                            "hf_id" : $scope.drug_update_info.hf_id,
+                                            "drug_name" : $scope.drug_update_info.drug_name,
+                                            "drug_code" : $scope.drug_update_info.drug_code,
+                                            "drug_description" :  $scope.drug_update_info.drug_description,
+                                            "drug_id" : $scope.drug_update_info.drug_id,
+                                            "drug_asl" : parseInt(drug.drug_asl),
+                                            "drug_eop" : parseInt(drug.drug_eop),
+                                            "drug_abs" : parseInt(drug.drug_abs),
+                                            "hf_detail" : $scope.drug_update_info.hf_detail,
+                                            "__v" : 0,
+                                            "drug_abs_old" : parseInt($scope.drug_update_info.drug_abs),
+                                            "update_type" : "web_update",
+                                            "user_update" : {
+                                                "username" : "admin"
+                                            }
+                                        }
+                                    }
+                                    console.log('Drug History');
+                                    console.log(_drug_histories);
+                                    //Todo: update to drug_histories table
+                                    $http.post('/drug_histories', _drug_histories).then(function(rs){
+                                        if(rs.data.responseCode == 0){
+                                            //success
+                                            console.log('Success');
+                                        }
+                                    })
                                 })
                             }
                         })
@@ -255,6 +316,7 @@ $scope.edit_drug = function (drug) {
         })
 
     }
+
 }
 
 $scope.remove_drug = function (drug) {
@@ -405,6 +467,7 @@ $scope.edit_hf = function (hf_selected, hf_type) {
             })
         }
     })
+
 }
 
 $scope.delete_hf = function (hf_selected) {

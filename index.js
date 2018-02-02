@@ -17,7 +17,7 @@ const router = express.Router();
 
 
 var crud_options = { //specify options
-    host: 'medic-svr.hongngochospital.vn:'+app_port
+    host: 'medic-nepal.hongngochospital.vn:'+app_port
 }
 const SMSCheck = require('./utils.js');
 
@@ -196,35 +196,66 @@ app.delete('/db_delete/:collection/:object_id', (req,res)=>{
 
 })
 //Get all drugs of Health Post
-app.get('/db_getDrugs/:collection/:object_id', (req,res)=>{
-
-    MongoClient.connect(mongoDB, function(err, db) {
-        var collection = db.collection(req.params.collection);
-        collection.find({ "hf_id" : mongoose.Types.ObjectId(req.params.object_id) }, function(err, result) {
-            if(err == null){
-                res.json({
-                    status: true
-                })
-            }else{
-                res.json({
-                    status: false
-                })
-            }
-        });
-
-    })
-
-        var deleteDocument = function(db, callback) {
-        var collection = db.collection(req.params.collection);
-        collection.find({ "hf_id" : req.params.object_id }, function(err, result) {
-            if(err == null){
-                console.log("Find all drugs by HF id !");
-            }
-
-            callback(result);
-        });
-    }
-})
+// app.get('/db_getDrugs/:collection/:object_id', (req,res)=>{
+//
+//     MongoClient.connect(mongoDB, function(err, db) {
+//         var collection = db.collection(req.params.collection);
+//         collection.find({ "hf_id" : mongoose.Types.ObjectId(req.params.object_id) }, function(err, result) {
+//             if(err == null){
+//                 res.json({
+//                     status: true
+//                 })
+//             }else{
+//                 res.json({
+//                     status: false
+//                 })
+//             }
+//         });
+//
+//     })
+//
+//         var deleteDocument = function(db, callback) {
+//         var collection = db.collection(req.params.collection);
+//         collection.find({ "hf_id" : req.params.object_id }, function(err, result) {
+//             if(err == null){
+//                 console.log("Find all drugs by HF id !");
+//             }
+//
+//             callback(result);
+//         });
+//     }
+// })
+//get total Drug
+// app.get('/db_getTotal/:collection/:opject_id', (req, res) => {
+//     MongoClient.connect(mongoDB, function(err, db) {
+//
+//     var collection = db.collection(req.params.collection);
+//     collection.aggregate([{$match:{"hf_id" : mongoose.Types.ObjectId(req.params.object_id), "drug_code":(req.params.drug_code), "createdAt":{"$gte": ISODate(req.params.createdAt)} }},
+//         {$group:{_id:{drug_name:"$drug_name", drug_code:"$drug_code"}, drug_abs:{$sum:"$drug_abs"}}}], function(err, result) {
+//         if(err == null){
+//             res.json({
+//                 status: true
+//             })
+//         }else{
+//             res.json({
+//                 status: false
+//             })
+//         }
+//     });
+//     var deleteDocument = function(db, callback) {
+//         var collection = db.collection(req.params.collection);
+//         collection.aggregate([{$match:{"hf_id" : mongoose.Types.ObjectId(req.params.object_id), "drug_code":(req.params.drug_code), "createdAt":{"$gte": ISODate(req.params.createdAt)} }},
+//             {$group:{_id:{drug_name:"$drug_name", drug_code:"$drug_code"}, drug_abs:{$sum:"$drug_abs"}}}], function(err, result) {
+//             if(err == null){
+//                 console.log("Find all drugs history by HF_id,drug_code  !");
+//             }
+//
+//             callback(result);
+//         });
+//     }
+//
+// })
+// })
 
 // app.use('/', (req,res)=>{
 

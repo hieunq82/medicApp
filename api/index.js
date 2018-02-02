@@ -115,13 +115,21 @@ app.use('/api/app', function(req, res) {
                                                         //  sonlt add Checking person_mobile of Health Post with person_mobile registed in Reporting Center
                                                         db.collection('healthfacilities').find({"person_mobile": _hf_stock_mobile}).toArray(function(error, data){
                                                             if (error == null) {
-                                                                var _top_stock_mobile = data[0].reporting_center.person_mobile;
+                                                                // var _top_stock_mobile = data[0].reporting_center.person_mobile;
                                                                 if (data.length > 0) {
                                                                     //Check Quantity Drug
                                                                     //Check ABS =< EOP
                                                                     if (_request_qty <= parseInt(_druginfo.drug_eop)) {
                                                                         //General task: Send sms to Reporting Center is " Health Post has low stock of Drug"
-                                                                        _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code + ', QTY:' + _smsSyntax[2] + '(' + _druginfo.drug_eop + ') level.' , _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                        var reporting_center = data[0].reporting_center;
+                                                                        console.log('----Data Reporting Center----');
+                                                                        console.log(reporting_center);
+                                                                            reporting_center.forEach(function(reporting) {
+                                                                            var _top_stock_mobile = reporting.person_mobile;
+                                                                                console.log('----_top_stock_mobile----');
+                                                                                console.log(_top_stock_mobile);
+                                                                            _task_register.push(create_task(_druginfo.hf_detail.name + ' has low stock of ' + _druginfo.drug_code + ', QTY:' + _smsSyntax[2] + '(' + _druginfo.drug_eop + ') level.' , _top_stock_mobile, 'sms_out', 'PENDING', drugRegID));
+                                                                         });
                                                                         //General task: Send sms to Health Post is " Register Succeed! DRUG CODE: _DRUG_ _QTY_. Your balance stock is less than EOP (EOP quanity) level."
                                                                         _task_register.push(create_task('Register Succeed! DRUG CODE: ' + _smsSyntax[1].toUpperCase() + ', QTY: ' + _smsSyntax[2] + '. Your balance stock is less than EOP (' + _druginfo.drug_eop + ') level.', _hf_stock_mobile, 'sms_out', 'PENDING', drugRegID));
                                                                         //Check ASL > ABS > EOP:

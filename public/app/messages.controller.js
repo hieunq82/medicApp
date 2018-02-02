@@ -180,16 +180,31 @@ angular.module('drugmonApp').controller('MessagesCtrl', function ($scope, $http,
         $http.post('/messages/list', x_req).then(function (rs) {
             console.log("All Messages");
             $scope.list_mesages = rs.data.docs;
-            // var _tmp_obj = groupArrBy(rs.data.docs, 'from');
-            // console.log(_tmp_obj);
-            // for (var o in _tmp_obj) {
-            //     $scope.list_mesages.push({
-            //         from: o,
-            //         messages: _tmp_obj[o]
-            //     });
-            // }
-            // console.log("messages group");
-            // console.log(_tmp_obj);
+            console.log($scope.list_mesages);
+            var _groupSMS = []
+            var _tmp_sms = {};
+            $scope.detail_contact.forEach(function (detail) {
+                $scope.list_mesages.forEach(function (sms) {
+                    if (sms.from == detail.person_mobile) {
+                        _tmp_sms = {
+                            content: sms.content,
+                            createdAt: sms.createdAt,
+                            from: sms.from,
+                            id: sms.id,
+                            sms_received: sms.sms_received,
+                            sms_sent: sms.sms_sent,
+                            type: sms.type,
+                            updatedAt:sms.createdAt,
+                            _id: sms._id,
+                            hf_name: detail.name,
+                        }
+                        _groupSMS.push(_tmp_sms);
+                    }
+                })
+            })
+            console.log('Check _groupSMS');
+            console.log(_groupSMS);
+
             $scope.list_mesages.loader = false;
         }, function () {
             console.log('Error!');

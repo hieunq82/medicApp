@@ -99,7 +99,7 @@
 
                                                     <div class="form-group">
                                                         Reporting center:
-                                                        <button ng-if="hf_selected.reporting_center.length > 0" style="margin-right: 5px;" ng-repeat="report in hf_selected.reporting_center" class="btn btn-danger btn-sm" ng-click="choose_hf(report)">{{report.name}}</button>
+                                                        <button ng-if="hf_selected.reporting_center.length > 0" style="margin-right: 5px;" ng-repeat="report in hf_selected.reporting_center" class="btn btn-danger btn-sm" ng-click="selected_hf(report._id)">{{report.name}}</button>
                                                     </div>
                                                         <div class="form-group">
                                                             Notes:

@@ -56,6 +56,8 @@ angular.module('drugmonApp').controller('ReportCtrl', function($scope,$http,toas
         }
         $http.post('/hfdrugs/list', _xdata).then(function(rs){
             $scope.hf_drug_detail = rs.data.docs[0];
+            console.log('HF DRUG DETAIL');
+            console.log($scope.hf_drug_detail);
             $scope.hf_name = $scope.hf_drug_detail.hf_detail.name;
             var tmp_hfdrug = {
                 data : {
@@ -67,6 +69,36 @@ angular.module('drugmonApp').controller('ReportCtrl', function($scope,$http,toas
                 console.log('--Push to hfdrugs--');
                 toaster.pop('success', "Success ", "Drug was added to "+$scope.hf_name, 5000);
                 ModalControl.closeModal('HFupdate');
+                var _drug_histories = {
+                    "data" : {
+                        "updatedAt" : new Date(),
+                        "createdAt" : new Date(),
+                        "hf_name" :  $scope.hf_drug_detail.hf_name,
+                        "hf_id" :  $scope.hf_drug_detail.hf_id,
+                        "drug_name" :  $scope.hf_drug_detail.drug_name,
+                        "drug_code" :  $scope.hf_drug_detail.drug_code,
+                        "drug_description" :   $scope.hf_drug_detail.drug_description,
+                        "drug_id" :  $scope.hf_drug_detail.drug_id,
+                        "drug_asl" :  $scope.hf_drug_detail.drug_asl,
+                        "drug_eop" :  $scope.hf_drug_detail.drug_eop,
+                        "drug_abs" : parseInt(hf_drug.raw_msg[2]),
+                        "hf_detail" :  $scope.hf_drug_detail.hf_detail,
+                        "__v" : 0,
+                        "drug_abs_old" : parseInt( $scope.hf_drug_detail.drug_abs),
+                        "update_type" : "web_update",
+                        "user_update" : {
+                            "username" : "admin"
+                        }
+                    }
+                }
+                console.log('Drug History');
+                console.log(_drug_histories);
+                //Todo: update to drug_histories table
+                $http.post('/drug_histories', _drug_histories).then(function(rs){
+                    if(rs.data.responseCode == 0){
+                        console.log('Success');
+                    }
+                })
             })
 
         })
